@@ -1,0 +1,24 @@
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        LogLevel warn
+
+        #http://playframework.blogspot.de/2010/03/upgrading-your-play-applications.html
+
+        <Proxy balancer://mycluster>
+            BalancerMember http://localhost:9000
+            BalancerMember http://localhost:9001
+        </Proxy>
+
+        <Proxy *>
+            Order Allow,Deny
+            Allow From All
+        </Proxy>
+        ProxyPreserveHost On
+        ProxyPass /balancer-manager !
+        ProxyPass / balancer://mycluster/
+        ProxyPassReverse / http://localhost:9000/
+        ProxyPassReverse / http://localhost:9001/
+</VirtualHost>
