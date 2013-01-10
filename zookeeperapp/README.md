@@ -17,7 +17,12 @@
 
 #Demo App
 ## Start Demo
-# Server: `sbt "run-main ZookeeperServerMain"`
-# Client: `sbt "run-main ZookeeperClientMain"`
+# Server: `sbt "run-main common.ZookeeperServerMain"`
+# Client: `sbt "run-main common.ZookeeperClientMain"`
 * some Code is from https://github.com/wdalmut/zookeeper-helloworld
 * beware: version 3.4.4 of Zookeeper is buggy
+
+# Notes for Michael
+* sbt "run-main common.ZookeeperServerMain"
+* sbt "run-main discovery.JoinMain"
+* zkCli.sh ls /fakedocearinstances

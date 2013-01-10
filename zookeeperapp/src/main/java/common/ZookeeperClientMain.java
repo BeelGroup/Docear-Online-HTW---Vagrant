@@ -1,7 +1,6 @@
+package common;
+
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.ZooKeeperMain;
 
 import java.io.IOException;
 

@@ -1,0 +1,5 @@
+## Discovery demo:
+* start ZooKeeper Server, see zookeeperapp/README.md
+* start play
+
+* open in your browser http://localhost:9000/discovery

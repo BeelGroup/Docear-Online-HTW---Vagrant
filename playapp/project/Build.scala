@@ -8,7 +8,11 @@ object ApplicationBuild extends Build {
     val appVersion      = "1.0-SNAPSHOT"
 
     val appDependencies = Seq(
-      // Add your project dependencies here,
+      "org.apache.zookeeper" % "zookeeper" % "3.4.5" % "compile" excludeAll(
+        ExclusionRule(organization = "com.sun.jdmk"),
+        ExclusionRule(organization = "com.sun.jmx"),
+        ExclusionRule(organization = "javax.jms")
+        )//not needed, but cause error: FAILED DOWNLOADS
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
