@@ -34,6 +34,7 @@
 	* usefull if new artifact is deployed
 * `vagrant destroy` deletes the virtual maschine
 * `vagrant ssh` opens a ssh session to the maschine
+    * on windows: use Putty, username: vagrant, password: vagrant, Port 2222
 * `vagrant halt` shuts down a virtual maschine
 
 ### Ports
