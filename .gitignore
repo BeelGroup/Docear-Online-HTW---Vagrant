@@ -9,7 +9,6 @@ playapp/project/project/target
 playapp/logs
 playapp/dist
 target
-classes
 RUNNING_PID
 log.txt
 classes

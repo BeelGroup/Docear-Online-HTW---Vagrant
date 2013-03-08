@@ -6,6 +6,37 @@ exec { 'apt-get-update':
   command => '/usr/bin/apt-get update'
 }
 
+define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group = "$username", $groups = [], $ssh_key = "", $ssh_key_type = "") {
+  user { $username:
+      comment => "$full_name",
+      home    => "$home",
+      shell   => "$shell",
+      managehome => true,
+      gid => "$main_group",
+      groups => $groups,
+      require => [Group["$username"], File["$home"]]
+  }
+
+  if $ssh_key {
+      ssh_authorized_key{ $username:
+          user => "$username",
+          ensure => present,
+          type => "$ssh_key_type",
+          key => "$ssh_key",
+          name => "$username",
+          require => User[$username]
+      }
+  }
+
+  file { "$home":
+      ensure => "directory",
+  }
+
+  group { $username:
+      ensure => "present",
+  }
+}
+
 #http://projects.puppetlabs.com/projects/1/wiki/Debian_Apache2_Recipe_Patterns
 class apache {
   package { "apache2":
@@ -66,4 +97,10 @@ package { "packages":
   name => ["openjdk-6-jre", "unzip", "coreutils", "xvfb", "screen"],
   ensure => present,
   require => Exec['apt-get-update'],
+}
+
+add_user { "play-frontend":
+  username => "play-frontend",
+  full_name => "play frontend server",
+  home => "/var/play-frontend",
 }
