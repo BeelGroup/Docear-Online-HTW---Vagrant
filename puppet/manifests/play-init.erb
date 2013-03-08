@@ -1,4 +1,7 @@
 #!/bin/sh
+
+set -x
+
 ### BEGIN INIT INFO
 # Provides:          play-frontend
 # Required-Start:    $local_fs $remote_fs
@@ -17,7 +20,7 @@
 
 
 # Path to the application
-APPLICATION_PATH=/var/play-frontend/current
+APPLICATION_PATH=<%= @play_application_path %>
 APPLICATION_NAME="play frontend"
 
 # Additional start params

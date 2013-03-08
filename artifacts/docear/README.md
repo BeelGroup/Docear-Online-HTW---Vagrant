@@ -1,1 +1,0 @@
-put in this folder docear_linux.taz.gz

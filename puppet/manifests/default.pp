@@ -100,11 +100,12 @@ package { "packages":
 }
 
 $play_frontend_username = "play-frontend"
+$play_frontend_home = "/var/$play_frontend_username"
   
 add_user { "$play_frontend_username":
   username => "$play_frontend_username",
   full_name => "play frontend server",
-  home => "/var/$play_frontend_username",
+  home => $play_frontend_home,
 }
 
 $play_config_resource = $deploy_environment ? {
@@ -114,6 +115,8 @@ $play_config_resource = $deploy_environment ? {
 }
 
 
+$play_application_path = "$play_frontend_home/current"
+
 file {"/etc/init.d/$play_frontend_username":
   content => template("/vagrant/puppet/manifests/play-init.erb"),
   ensure => present,
@@ -122,5 +125,28 @@ file {"/etc/init.d/$play_frontend_username":
   mode => 750,
   require => Add_user[$play_frontend_username]
 }
+
+$play_frontend_version = "docear-frontend-0.1-SNAPSHOT"
+
+exec { 'unzip play':
+      command => "rm -rf ${play_frontend_version} && unzip ${play_frontend_version}.zip && sudo rm -rf $play_application_path && sudo mv ${play_frontend_version} $play_application_path",
+      cwd => "/vagrant/artifacts",
+      require => File["/etc/init.d/$play_frontend_username"]
+}
+
+file {"$play_application_path rights":
+      path => $play_application_path,
+      ensure  => 'present',
+      mode  => '0644',
+      owner => $play_frontend_username,
+      group => $play_frontend_username,
+      recurse => true,
+}
+
+exec { 'activate play init script':
+      command => "sudo update-rc.d $play_frontend_username defaults",
+      require => [Exec['unzip play'], File["$play_application_path rights"]]
+}
+
 
     #sudo update-rc.d play-frontend defaults
