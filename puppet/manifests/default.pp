@@ -49,7 +49,7 @@ class apache {
 
   file { "apache-conf":
       path    => "/etc/apache2/sites-available/default",
-      content => template("/vagrant/puppet/vagrant-manifests/apache-virtual-host.erb"),
+      content => template("/vagrant/puppet/manifests/apache-virtual-host.erb"),
       require  => Package["apache2"]
   }
 
