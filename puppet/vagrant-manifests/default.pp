@@ -1,3 +1,5 @@
+notify{"The deploy_environment is: ${deploy_environment}": }
+
 Exec { path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/bin", ] }
 
 exec { 'apt-get-update':

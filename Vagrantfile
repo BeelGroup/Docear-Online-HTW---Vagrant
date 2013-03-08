@@ -18,17 +18,8 @@ Vagrant::Config.run do |config|
    puppet.manifest_file = "default.pp"
    puppet.module_path  = "puppet/modules"
 
-   play_zip_name = Dir.foreach('artifacts/play').find_all{|item| item.end_with?(".zip") }.first
-   play_app_name_version = nil
-   if !play_zip_name.nil?
-       play_app_name_version = play_zip_name.gsub(".zip", "")
-   end
-
-   docear_app_name_version = IO.read("artifacts/docear/version.txt")
-
    puppet.facter = [
-      [ "play_app_name_version", play_app_name_version ],
-      [ "docear_app_name_version", docear_app_name_version ]
+      [ "deploy_environment", "dev" ],
    ]
 
   end
