@@ -134,19 +134,32 @@ exec { 'unzip play':
       require => File["/etc/init.d/$play_frontend_username"]
 }
 
-file {"$play_application_path rights":
+file {"$play_frontend_home rights":
       path => $play_application_path,
       ensure  => 'present',
-      mode  => '0644',
+      mode  => '0664',
       owner => $play_frontend_username,
       group => $play_frontend_username,
       recurse => true,
+      require => [Exec['unzip play']]
+}
+
+file {"$play_application_path start rights":
+    path => "${play_application_path}/start",
+    ensure  => 'present',
+    owner => $play_frontend_username,
+    group => $play_frontend_username,
+    mode  => '0750',
+    require => [File["$play_frontend_home rights"]]
 }
 
 exec { 'activate play init script':
       command => "sudo update-rc.d $play_frontend_username defaults",
-      require => [Exec['unzip play'], File["$play_application_path rights"]]
+      require => [File["$play_application_path start rights"]]
 }
 
-
-    #sudo update-rc.d play-frontend defaults
+service { "$play_frontend_username":
+    ensure  => "running",
+    enable  => "true",
+    require => Exec['activate play init script'],
+}

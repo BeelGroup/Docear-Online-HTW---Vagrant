@@ -24,7 +24,7 @@ APPLICATION_PATH=<%= @play_application_path %>
 APPLICATION_NAME="play frontend"
 
 # Additional start params
-PARAMS="-Dconfig.resource=<%= @play_config_resource %> -Dhttp.port=9000 -Dhttp.address=127.0.0.1"
+PARAMS="-Dconfig.resource=<%= @play_config_resource %> -Dhttp.port=9000 -Dhttp.address=127.0.0.1 -Ddb.default.url=jdbc:h2:file:/tmp/play-frontend/h2/data"
 JAVA_HOME=/usr/lib/jvm/java-6-openjdk
 export JAVA_HOME
 
@@ -36,11 +36,13 @@ USER=<%= @play_frontend_username %>
 # -> comented out for ubuntu . /etc/init.d/functions
 RETVAL=0
 
-cd ${APPLICATION_PATH}
+#you can't start directly in folder with start script
+cd ${APPLICATION_PATH}/../
 
 start() {
-        
-        start-stop-daemon --pidfile ${APPLICATION_PATH}/RUNNING_PID --chuid ${USER} --exec ${APPLICATION_PATH}/start --background --start -- "${PARAMS}"
+        PIDFILE="${APPLICATION_PATH}/RUNNING_PID"
+        START_CMD="${APPLICATION_PATH}/start ${PARAMS}"
+        start-stop-daemon --start -p "${PIDFILE}" --background --chuid ${USER}:${USER} --exec /bin/bash -- ${START_CMD}
         
         echo -n "Started Play Application: ${APPLICATION_NAME}... "
         
