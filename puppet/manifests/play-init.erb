@@ -1,0 +1,102 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          play-frontend
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Should-Start:      $network
+# Should-Stop:       $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Daemonized version of play frontend.
+# Description:       
+### END INIT INFO
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # #   M A I N  C U S T O M I S A T I O N   S E C T I O N  # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+
+# Path to the application
+APPLICATION_PATH=/var/play-frontend/current
+APPLICATION_NAME="play frontend"
+
+# Additional start params
+PARAMS="-Dconfig.resource=<%= @play_config_resource %> -Dhttp.port=9000 -Dhttp.address=127.0.0.1"
+JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+export JAVA_HOME
+
+# User running the Play process
+USER=<%= @play_frontend_username %>
+
+
+# source function library
+# -> comented out for ubuntu . /etc/init.d/functions
+RETVAL=0
+
+cd ${APPLICATION_PATH}
+
+start() {
+        
+        start-stop-daemon --pidfile ${APPLICATION_PATH}/RUNNING_PID --chuid ${USER} --exec ${APPLICATION_PATH}/start --background --start -- "${PARAMS}"
+        
+        echo -n "Started Play Application: ${APPLICATION_NAME}... "
+        
+        RETVAL=$?
+
+        # You may want to start more applications as follows
+        # [ $RETVAL -eq 0 ] && su $USER -c "${PLAY} start application2"
+        # RETVAL=$?
+
+        if [ $RETVAL -eq 0 ]; then
+                echo " - Success"
+        else
+                echo " - Failure"
+        fi
+        echo
+}
+stop() {
+
+        kill -9 `cat ${APPLICATION_PATH}/RUNNING_PID`
+        rm -rf ${APPLICATION_PATH}/RUNNING_PID
+        echo -n "Stopping Play Application: ${APPLICATION_NAME}"
+
+        RETVAL=$?
+
+        if [ $RETVAL -eq 0 ]; then
+                echo " - Success"
+        else
+                echo " - Failure"
+        fi
+        echo
+}
+status() {
+        ${PLAY} status ${APPLICATION_PATH}
+        RETVAL=$?
+}
+clean() {
+        rm -f ${APPLICATION_PATH}/RUNNING_PID
+        #rm -f application2/service.pid
+}
+case "$1" in
+        start)
+        clean
+        start
+        ;;
+        stop)
+        stop
+        ;;
+        restart|reload)
+        stop
+        sleep 10
+        start
+        ;;
+        status)
+        status
+        ;;
+        clean)
+        clean
+        ;;
+        *)
+        echo "Usage: $0 {start|stop|restart|status}"
+esac
+exit 0

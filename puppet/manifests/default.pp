@@ -99,8 +99,28 @@ package { "packages":
   require => Exec['apt-get-update'],
 }
 
-add_user { "play-frontend":
-  username => "play-frontend",
+$play_frontend_username = "play-frontend"
+  
+add_user { "$play_frontend_username":
+  username => "$play_frontend_username",
   full_name => "play frontend server",
-  home => "/var/play-frontend",
+  home => "/var/$play_frontend_username",
 }
+
+$play_config_resource = $deploy_environment ? {
+    'dev' =>  "staging.conf",
+    'staging' => "staging.conf",
+    'prod' => "prod.conf"
+}
+
+
+file {"/etc/init.d/$play_frontend_username":
+  content => template("/vagrant/puppet/manifests/play-init.erb"),
+  ensure => present,
+  group => "root",
+  owner => "root",
+  mode => 750,
+  require => Add_user[$play_frontend_username]
+}
+
+    #sudo update-rc.d play-frontend defaults
