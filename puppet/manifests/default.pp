@@ -117,13 +117,30 @@ $play_config_resource = $deploy_environment ? {
 
 $play_application_path = "$play_frontend_home/current"
 
-file {"/etc/init.d/$play_frontend_username":
-  content => template("/vagrant/puppet/manifests/play-init.erb"),
-  ensure => present,
-  group => "root",
-  owner => "root",
-  mode => 750,
-  require => Add_user[$play_frontend_username]
+define add_init_script($name, $application_path, $start_command, $user, $group, $pid_file) {
+
+  file {"/etc/init.d/$name":
+      content => template("/vagrant/puppet/manifests/init-with-pid.erb"),
+      ensure => present,
+      group => "root",
+      owner => "root",
+      mode => 750,
+  }
+
+  exec {"activate /etc/init.d/$name":
+      command => "sudo update-rc.d $name defaults",
+      require => File["/etc/init.d/$name"]
+  }
+}
+
+add_init_script {"$play_frontend_username":
+  name => "$play_frontend_username",
+  application_path => $play_application_path,
+  start_command => "$play_application_path/start -Dconfig.resource=$play_config_resource -Dhttp.port=9000 -Dhttp.address=127.0.0.1 -Ddb.default.url=jdbc:h2:file:/tmp/play-frontend/h2/data",
+  user => "$play_frontend_username",
+  group => "$play_frontend_username",
+  pid_file => "$play_application_path/RUNNING_PID",
+  require => [Add_user[$play_frontend_username], File["$play_application_path start rights"]]
 }
 
 $play_frontend_version = "docear-frontend-0.1-SNAPSHOT"
@@ -131,7 +148,7 @@ $play_frontend_version = "docear-frontend-0.1-SNAPSHOT"
 exec { 'unzip play':
       command => "rm -rf ${play_frontend_version} && unzip ${play_frontend_version}.zip && sudo rm -rf $play_application_path && sudo mv ${play_frontend_version} $play_application_path",
       cwd => "/vagrant/artifacts",
-      require => File["/etc/init.d/$play_frontend_username"]
+      require => []
 }
 
 file {"$play_frontend_home rights":
@@ -153,13 +170,8 @@ file {"$play_application_path start rights":
     require => [File["$play_frontend_home rights"]]
 }
 
-exec { 'activate play init script':
-      command => "sudo update-rc.d $play_frontend_username defaults",
-      require => [File["$play_application_path start rights"]]
-}
-
 service { "$play_frontend_username":
     ensure  => "running",
     enable  => "true",
-    require => Exec['activate play init script'],
+    require => Add_init_script["$play_frontend_username"],
 }
