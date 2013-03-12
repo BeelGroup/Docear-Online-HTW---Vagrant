@@ -233,6 +233,36 @@ file {"$mindmap_backend_application_path start rights":
 
 
 
+#SSL
+class ssl {
+    exec { 'apache-proxy':
+        command => "a2enmod proxy",
+        require => [apache2]
+    }
+    exec { 'apache-proxy':
+        command => "a2enmod ssl",
+        require => [apache2]
+    }
+    exec { 'apache-proxy':
+        command => "a2enmod headers",
+        require => [apache2]
+    }
+    
+    file { "ssl-server-crt ":
+        path    => "/etc/ssl/certs/server.crt",
+        content => template("/vagrant/puppet/manifests/ssl/new.cert.cert.erb"),
+        require  => Package["apache2"]
+    }
+    file { "ssl-server-key ":
+        path    => "/etc/ssl/private/server.key",
+        content => template("/vagrant/puppet/manifests/ssl/new.cert.key.erb"),
+        require  => Package["apache2"]
+    }
+}
+
+
+
+
 
 
 
