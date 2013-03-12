@@ -227,3 +227,8 @@ file {"$mindmap_backend_application_path start rights":
     mode  => '0750',
     require => [File["$mindmap_backend_application_path rights"], Exec['correct line endings for freeplane.sh']]
 }
+
+
+    #-L: Tell screen to turn on automatic output logging for the windows.
+    #-d -m detach session, option for startup scripts
+    #screen -L -d -m xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" bash freeplane.sh
