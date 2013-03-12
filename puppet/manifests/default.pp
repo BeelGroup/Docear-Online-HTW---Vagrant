@@ -101,21 +101,19 @@ package { "packages":
 
 $play_frontend_username = "play-frontend"
 $play_frontend_home = "/var/$play_frontend_username"
-  
-add_user { "$play_frontend_username":
-  username => "$play_frontend_username",
-  full_name => "play frontend server",
-  home => $play_frontend_home,
-}
-
+$play_application_path = "$play_frontend_home/current"
 $play_config_resource = $deploy_environment ? {
     'dev' =>  "staging.conf",
     'staging' => "staging.conf",
     'prod' => "prod.conf"
 }
+$play_frontend_version = "docear-frontend-0.1-SNAPSHOT"
 
-
-$play_application_path = "$play_frontend_home/current"
+add_user { "$play_frontend_username":
+  username => "$play_frontend_username",
+  full_name => "play frontend server",
+  home => $play_frontend_home,
+}
 
 define add_init_script($name, $application_path, $start_command, $user, $group, $pid_file) {
 
@@ -143,12 +141,11 @@ add_init_script {"$play_frontend_username":
   require => [Add_user[$play_frontend_username], File["$play_application_path start rights"]]
 }
 
-$play_frontend_version = "docear-frontend-0.1-SNAPSHOT"
-
 exec { 'unzip play':
       command => "rm -rf ${play_frontend_version} && unzip ${play_frontend_version}.zip && sudo rm -rf $play_application_path && sudo mv ${play_frontend_version} $play_application_path",
       cwd => "/vagrant/artifacts",
-      require => []
+      require => [],
+      onlyif => "test -f $play_application_path/start"
 }
 
 file {"$play_frontend_home rights":
