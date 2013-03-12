@@ -28,12 +28,17 @@ define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group 
       }
   }
 
-  file { "$home":
-      ensure => "directory",
-  }
-
   group { $username:
       ensure => "present",
+  }
+
+  file {"$home init rights":
+      path => $home,
+      ensure  => "directory",
+      mode  => '0664',
+      owner => $username,
+      group => $username,
+      recurse => true,
   }
 }
 
@@ -171,6 +176,56 @@ service { "$play_frontend_username":
     ensure  => "running",
     enable  => "true",
     require => Add_init_script["$play_frontend_username"],
+}
+
+$mindmap_backend_username = "mindmap-backend"
+$mindmap_backend_home = "/var/$mindmap_backend_username"
+$mindmap_backend_artifact = "freeplane-server-headless"
+$mindmap_backend_application_path = "$mindmap_backend_home/current"
+$mindmap_backend_start_script = "$mindmap_backend_application_path/freeplane.sh"
+
+add_user { "$mindmap_backend_username":
+    username => "$mindmap_backend_username",
+    full_name => "Freeplane server",
+    home => $mindmap_backend_home,
+}
+
+exec { 'unzip mindmap_backend':
+    command => "rm -rf ${mindmap_backend_artifact} && unzip ${mindmap_backend_artifact}.zip && sudo rm -rf $mindmap_backend_application_path && sudo mv ${mindmap_backend_artifact} $mindmap_backend_application_path",
+    cwd => "/vagrant/artifacts",
+    require => [],
+    #onlyif => "test -f $mindmap_backend_application_path/freeplane.sh"
+}
+
+file {"$mindmap_backend_application_path rights":
+    path => "$mindmap_backend_application_path",
+    ensure  => 'present',
+    mode  => '0664',
+    owner => $mindmap_backend_username,
+    group => $mindmap_backend_username,
+    recurse => true,
+    require => [Exec['unzip mindmap_backend']]
+}
+
+#workaround for https://github.com/Docear/HTW-Frontend/issues/136
+exec { 'correct line endings for freeplane.sh':
+    command => "fromdos $mindmap_backend_start_script",
+    cwd => "$mindmap_backend_application_path",
+    require => [Package["tofrodos"], Exec['unzip mindmap_backend']],
+  #onlyif => "test -f $mindmap_backend_application_path/freeplane.sh"
+}
+package { "tofrodos":
+    ensure => present,
+    require => Exec['apt-get-update'],
+}
+
+file {"$mindmap_backend_application_path start rights":
+    path => "$mindmap_backend_start_script",
+    ensure  => 'present',
+    owner => $mindmap_backend_username,
+    group => $mindmap_backend_username,
+    mode  => '0750',
+    require => [File["$mindmap_backend_application_path rights"], Exec['correct line endings for freeplane.sh']]
 }
 
 
