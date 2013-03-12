@@ -14,7 +14,7 @@ define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group 
       managehome => true,
       gid => "$main_group",
       groups => $groups,
-      require => [Group["$username"], File["$home"]]
+      require => [Group["$username"]]
   }
 
   if $ssh_key {
@@ -35,10 +35,11 @@ define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group 
   file {"$home init rights":
       path => $home,
       ensure  => "directory",
-      mode  => '0664',
+      mode  => '0660',
       owner => $username,
       group => $username,
       recurse => true,
+      require => User[$username]
   }
 }
 
@@ -120,7 +121,7 @@ add_user { "$play_frontend_username":
   home => $play_frontend_home,
 }
 
-define add_init_script($name, $application_path, $start_command, $user, $group, $pid_file) {
+define add_init_script($name, $application_path, $start_command, $user, $group, $pid_file, $current_working_dir) {
 
   file {"/etc/init.d/$name":
       content => template("/vagrant/puppet/manifests/init-with-pid.erb"),
@@ -143,13 +144,14 @@ add_init_script {"$play_frontend_username":
   user => "$play_frontend_username",
   group => "$play_frontend_username",
   pid_file => "$play_application_path/RUNNING_PID",
+  current_working_dir =>"$play_application_path/../",
   require => [Add_user[$play_frontend_username], File["$play_application_path start rights"]]
 }
 
 exec { 'unzip play':
       command => "rm -rf ${play_frontend_version} && unzip ${play_frontend_version}.zip && sudo rm -rf $play_application_path && sudo mv ${play_frontend_version} $play_application_path",
       cwd => "/vagrant/artifacts",
-      require => [],
+      require => [Package["packages"], Add_user["$play_frontend_username"]],
       onlyif => "test -f $play_application_path/start"
 }
 
@@ -165,7 +167,6 @@ file {"$play_frontend_home rights":
 
 file {"$play_application_path start rights":
     path => "${play_application_path}/start",
-    ensure  => 'present',
     owner => $play_frontend_username,
     group => $play_frontend_username,
     mode  => '0750',
@@ -195,7 +196,7 @@ add_user { "$mindmap_backend_username":
 exec { 'unzip mindmap_backend':
     command => "rm -rf ${mindmap_backend_unzipped_foldername} && unzip ${mindmap_backend_artifact}.zip && sudo rm -rf $mindmap_backend_application_path && sudo mv ${mindmap_backend_unzipped_foldername} $mindmap_backend_application_path",
     cwd => "/vagrant/artifacts",
-    require => [],
+    require => [Package["packages"], Add_user["$mindmap_backend_username"]],
     #onlyif => "test -f $mindmap_backend_application_path/freeplane.sh"
 }
 
@@ -238,7 +239,13 @@ file {"mindmap-backend-log-folder":
   mode  => '0750',
 }
 
-
-    #-L: Tell screen to turn on automatic output logging for the windows.
-    #-d -m detach session, option for startup scripts
-    #screen -L -d -m xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" bash freeplane.sh
+add_init_script {"$mindmap_backend_username":
+    name => "$mindmap_backend_username",
+    application_path => $mindmap_backend_application_path,
+    start_command => "xvfb-run ${mindmap_backend_application_path}/freeplane.sh",
+    user => "$mindmap_backend_username",
+    group => "$mindmap_backend_username",
+    pid_file => "$mindmap_backend_application_path/RUNNING_PID",
+    current_working_dir => "$mindmap_backend_application_path",
+    require => [File["mindmap-backend-log-folder"], File["$mindmap_backend_application_path start rights"]]
+}
