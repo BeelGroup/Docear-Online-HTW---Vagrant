@@ -172,3 +172,57 @@ service { "$play_frontend_username":
     enable  => "true",
     require => Add_init_script["$play_frontend_username"],
 }
+
+
+
+
+
+
+
+
+
+
+
+#FIREWALL
+package { "iptables":
+    ensure => "installed",
+    require => Exec['apt-get-update'],
+}
+
+class firewall {
+  package { "shorewall":
+    ensure => present,
+    require => Package["iptables"],
+  }
+
+  exec { "safe-restart-shorewall ":
+    command => "shorewall safe-restart",
+    refreshonly => true,
+  }
+
+  file { "shorewall-policy ":
+      path    => "/etc/shorewall/policy",
+      content => template("/vagrant/puppet/manifests/shorewall/policy.erb"),
+      require  => Package["shorewall"]
+  }
+  file { "shorewall-interfaces ":
+      path    => "/etc/shorewall/interfaces",
+      content => template("/vagrant/puppet/manifests/shorewall/interfaces.erb"),
+      require  => Package["shorewall"]
+  }
+  file { "shorewall-zones ":
+      path    => "/etc/shorewall/zones",
+      content => template("/vagrant/puppet/manifests/shorewall/zones.erb"),
+      require  => Package["shorewall"]
+  }
+  file { "shorewall-rules ":
+      path    => "/etc/shorewall/rules",
+      content => template("/vagrant/puppet/manifests/shorewall/rules.erb"),
+      require  => Package["shorewall"]
+  }
+
+  service { "shorewall":
+    ensure => running,
+    require => [Package["shorewall"], File["shorewall-policy"], File["shorewall-interfaces"], File["shorewall-zones"], File["shorewall-rules"]]
+  }
+}
