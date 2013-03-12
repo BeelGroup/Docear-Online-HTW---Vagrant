@@ -100,7 +100,7 @@ include apache
 
 #coreutils contains nohup
 package { "packages":
-  name => ["openjdk-6-jre", "unzip", "coreutils", "xvfb", "screen"],
+  name => ["openjdk-6-jre", "unzip", "coreutils", "xvfb", "screen", "vim"],
   ensure => present,
   require => Exec['apt-get-update'],
 }
@@ -144,7 +144,7 @@ add_init_script {"$play_frontend_username":
   user => "$play_frontend_username",
   group => "$play_frontend_username",
   pid_file => "$play_application_path/RUNNING_PID",
-  current_working_dir =>"$play_application_path/../",
+  current_working_dir =>"$play_frontend_home",
   require => [Add_user[$play_frontend_username], File["$play_application_path start rights"]]
 }
 
@@ -152,7 +152,6 @@ exec { 'unzip play':
       command => "rm -rf ${play_frontend_version} && unzip ${play_frontend_version}.zip && sudo rm -rf $play_application_path && sudo mv ${play_frontend_version} $play_application_path",
       cwd => "/vagrant/artifacts",
       require => [Package["packages"], Add_user["$play_frontend_username"]],
-      onlyif => "test -f $play_application_path/start"
 }
 
 file {"$play_frontend_home rights":
@@ -176,6 +175,7 @@ file {"$play_application_path start rights":
 service { "$play_frontend_username":
     ensure  => "running",
     enable  => "true",
+    hasstatus => false,
     require => Add_init_script["$play_frontend_username"],
 }
 
@@ -248,4 +248,11 @@ add_init_script {"$mindmap_backend_username":
     pid_file => "$mindmap_backend_application_path/RUNNING_PID",
     current_working_dir => "$mindmap_backend_application_path",
     require => [File["mindmap-backend-log-folder"], File["$mindmap_backend_application_path start rights"]]
+}
+
+service { "$mindmap_backend_username":
+  ensure => "running",
+  enable  => "true",
+  hasstatus => false,
+  require => Add_init_script["$mindmap_backend_username"]
 }
