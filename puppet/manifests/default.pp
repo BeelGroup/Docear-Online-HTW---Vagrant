@@ -180,7 +180,9 @@ service { "$play_frontend_username":
 
 $mindmap_backend_username = "mindmap-backend"
 $mindmap_backend_home = "/var/$mindmap_backend_username"
-$mindmap_backend_artifact = "freeplane-server-headless"
+$freeplane_version = "1.2.21"
+$mindmap_backend_artifact = "freeplane_bin-$freeplane_version"
+$mindmap_backend_unzipped_foldername = "freeplane-$freeplane_version"
 $mindmap_backend_application_path = "$mindmap_backend_home/current"
 $mindmap_backend_start_script = "$mindmap_backend_application_path/freeplane.sh"
 
@@ -191,7 +193,7 @@ add_user { "$mindmap_backend_username":
 }
 
 exec { 'unzip mindmap_backend':
-    command => "rm -rf ${mindmap_backend_artifact} && unzip ${mindmap_backend_artifact}.zip && sudo rm -rf $mindmap_backend_application_path && sudo mv ${mindmap_backend_artifact} $mindmap_backend_application_path",
+    command => "rm -rf ${mindmap_backend_unzipped_foldername} && unzip ${mindmap_backend_artifact}.zip && sudo rm -rf $mindmap_backend_application_path && sudo mv ${mindmap_backend_unzipped_foldername} $mindmap_backend_application_path",
     cwd => "/vagrant/artifacts",
     require => [],
     #onlyif => "test -f $mindmap_backend_application_path/freeplane.sh"
@@ -226,6 +228,14 @@ file {"$mindmap_backend_application_path start rights":
     group => $mindmap_backend_username,
     mode  => '0750',
     require => [File["$mindmap_backend_application_path rights"], Exec['correct line endings for freeplane.sh']]
+}
+
+file {"mindmap-backend-log-folder":
+  ensure  => 'directory',
+  path => "/var/log/mindmap-backend/",
+  owner => $mindmap_backend_username,
+  group => $mindmap_backend_username,
+  mode  => '0750',
 }
 
 
