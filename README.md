@@ -20,6 +20,7 @@
 
 ## SSH
 * Linux: vagrant ssh
+    * with non vagrant user: `ssh -p 2222 vornamenachname@localhost -o StrictHostKeyChecking=no`
 * Windows: Putty with user vagrant, password vagrant and port 2222 on 127.0.0.1
 * further information to work with the server: https://github.com/Docear/HTW-Frontend/wiki/Deployment
 
