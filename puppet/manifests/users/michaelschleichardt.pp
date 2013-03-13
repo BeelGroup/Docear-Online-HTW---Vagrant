@@ -3,6 +3,6 @@ add_user { "michaelschleichardt":
   full_name => "Michael Schleichardt",
   home => "/home/michaelschleichardt",
   groups => ["sudo"],
-  ssh_key => "AAAAB3NzaC1yc2EAAAADAQABAAABAQDCAxBVJryFsgIrdRz5TpgTmZ2GRnNfXhA2czfEucDJAcAJ5I+1t0gXUeBa9OGZu6bB/xuyu3FyjqvilWRrWfCehYBXc9uxK8wp0rxzbTN9RzTPFPB1tm0MPPENhLeV6N1mqBhhMT88toQw37P+AXDNUuA3W40wIelccnarMDii7X86BzlefXHs11dFQ5jdMUOFCoOky800dksxhOeHBgMUIqw+TalJ5J2XPtLrsgeWS/IjTVHjEAdhWlX/gPENFgnIar98cn47JKv3qnC6DidPueYz+uLMH1dNftgYZvMKldY6RqCZJlmtZ+4RMr4zHNwaQM4r96my60TD1tfFSOoz", 
-  ssh_key_type => "rsa"
+  ssh_key => "AAAAB3NzaC1kc3MAAACBAKeBDC1RUar7rxCRfRVd2jwgrUNKUWRp7VEjeAsoK95JFuXeW2ylc5kDEcWYMDBWxK9/3vUgrD/C+MLviSnWEXUu2alVvkho9lc4nkfvzhuVuDkr2WcmROMNZn/g+IbWB4g8otOb3Q7h2cTXU8KsRS5uCUmdcXlGxmLNygLu14d3AAAAFQDJTpf9mTEzMK8NYYNQbJAVcjP82wAAAIBBBmxUc5SPgTdcKYMwp/ehXMosVoh9E64LF+AFDwm2kmPLMqHra3cEUETgF+hK2Ok2Cf8WKiNxyKKOQjfLG5BioCq8IeGBeHQd9NtwJKN7ifQDoFgbu6QPes2841X5Hc1yp9sSp0NBLVBlu37mJpRFodiUzNY2MBh8xIhGOnFqQQAAAIEAiX1Lc+Ge5mn1C8d6RMbD21/bUxeeJYqjSrFpCZW5WKGJMaHjsPYqx6/KgFgQrA81V0HO0YkZaw6f9yBuk9DDkcsKrmXp7Ljvcl4qxsTvcbAljHjl9ySr1d0kucaY6WaAVTc+wgzh9jrskMvMSfqzZpj1vMzwrEsSl2EoOoFRizs=",
+  ssh_key_type => "dsa"
 }
