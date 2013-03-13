@@ -3,6 +3,10 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-export FACTER_deploy_environment='dev' 
+deploy_env=prod
+if [ `hostname` == "v22013031569111142.yourvserver.net" ]; then
+    deploy_env="staging"
+fi
+export FACTER_deploy_environment=$deploy_env
 export FACTER_stuff_folder='/root/puppet-stuff'
 puppet apply --modulepath "${FACTER_stuff_folder}/puppet/modules" "${FACTER_stuff_folder}/puppet/manifests/default.pp"
