@@ -1,41 +1,47 @@
 <VirtualHost *:80>
-        ServerAdmin webmaster@localhost
-
-        CustomLog ${APACHE_LOG_DIR}/access.log combined
-        ErrorLog ${APACHE_LOG_DIR}/error.log
-        LogLevel warn
-
-        #http://playframework.blogspot.de/2010/03/upgrading-your-play-applications.html
-
-        <Proxy balancer://mycluster>
-            BalancerMember http://localhost:9000
-            BalancerMember http://localhost:9001
-        </Proxy>
-
-        <Proxy *>
-            Order Allow,Deny
-            Allow From All
-        </Proxy>
-        ProxyPreserveHost On
-        ProxyPass /balancer-manager !
-        ProxyPass / balancer://mycluster/
-        ProxyPassReverse / http://localhost:9000/
-        ProxyPassReverse / http://localhost:9001/
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 </VirtualHost>
 
 <VirtualHost *:443>
     RequestHeader set X-Forwarded-Proto "https"
-    ProxyPreserveHost On
-	ServerAdmin webmaster@localhost
-
     SSLEngine On
     SSLCertificateFile /etc/ssl/certs/server.crt
     SSLCertificateKeyFile /etc/ssl/private/server.key
-
     <Location />
         SSLRequireSSL
     </Location>
 
-    ProxyPass / http://127.0.0.1:9000/
-    ProxyPassReverse / http://127.0.0.1:9000/
+    ServerAdmin webmaster@localhost
+
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    LogLevel warn
+
+    #http://playframework.blogspot.de/2010/03/upgrading-your-play-applications.html
+
+    <Proxy balancer://mycluster>
+        BalancerMember http://localhost:9000
+        BalancerMember http://localhost:9001
+    </Proxy>
+
+    <Proxy *>
+        Order Allow,Deny
+        Allow From All
+    </Proxy>
+    ProxyPreserveHost On
+    ProxyPass /balancer-manager !
+    ProxyPass / balancer://mycluster/
+    ProxyPassReverse / http://localhost:9000/
+    ProxyPassReverse / http://localhost:9001/
+
+    <% if @deploy_environment == "staging" %>
+    <Location / >
+        AuthName "Login"
+        AuthType Basic
+        AuthUserFile <%= @htpasswd_file_path %>
+        require valid-user
+    </Location>
+    <% end %>
 </VirtualHost>
