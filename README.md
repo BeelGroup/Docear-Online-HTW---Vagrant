@@ -5,23 +5,19 @@
 * http://vagrantup.com/
      * click "Download Now"
 	 * tested with vagrant_1.0.5.msi on Windows 7 Home Premium 64bit
-	 
+
+## View in Browser
+* https://localhost:4443/
+
 ## Working with the VM
 
 ### Setup Docear
 
-* put docear_linux.tar.gz in the folder artifacts/docear
-* put in the same folder a file version.txt which contains the docear build number
-    * for example docear-1.0.0.7_devel_build139
-    * it has to match with the content of the docear_linux.tar.gz
-    * beware of whitespace
-* don't check the files into version control
+TODO
 
-### Setup any play app
+### Setup Play
 
-* put into artifacts/play only one zip file
-    * zip file has to be created with `sbt dist -Dconfig.file=conf/name_the_conf_here.conf`
-    * the zip file is in the dist folder of your play app
+TODO
 
 ### Virtual maschine lifecycle
 

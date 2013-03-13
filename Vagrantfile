@@ -5,8 +5,9 @@ Vagrant::Config.run do |config|
   config.vm.box = "debian_squeeze_andrew_mcnaughty"
   config.vm.box_url = "http://andrew.mcnaughty.com/downloads/squeeze64_puppet27.box"
 
-  config.vm.forward_port 80, 4080
   #convention: port a0bc goes to 4abc
+  config.vm.forward_port 80, 4080
+  config.vm.forward_port 443, 4443
   config.vm.forward_port 8080, 4880
   config.vm.forward_port 8081, 4881
   config.vm.forward_port 9000, 4900
