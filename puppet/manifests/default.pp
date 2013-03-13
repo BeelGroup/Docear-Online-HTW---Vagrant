@@ -112,7 +112,7 @@ include apache
 
 #coreutils contains nohup
 package { "packages":
-  name => ["openjdk-6-jre", "unzip", "coreutils", "xvfb", "screen", "vim"],
+  name => ["openjdk-6-jre", "unzip", "coreutils", "xvfb", "screen", "vim", "sudo"],
   ensure => present,
   require => Exec['apt-get-update'],
 }
