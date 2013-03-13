@@ -86,12 +86,12 @@ class apache {
 
   file { "ssl-server-crt ":
       path    => "/etc/ssl/certs/server.crt",
-      content => template("/vagrant/puppet/manifests/ssl/new.cert.cert.erb"),
+      content => template("$stuff_folder/puppet/manifests/ssl/new.cert.cert.erb"),
       require  => Package["apache2"]
   }
   file { "ssl-server-key ":
       path    => "/etc/ssl/private/server.key",
-      content => template("/vagrant/puppet/manifests/ssl/new.cert.key.erb"),
+      content => template("$stuff_folder/puppet/manifests/ssl/new.cert.key.erb"),
       require  => Package["apache2"]
   }
 
@@ -294,22 +294,22 @@ class firewall {
 
   file { "shorewall-policy ":
       path    => "/etc/shorewall/policy",
-      content => template("/vagrant/puppet/manifests/shorewall/policy.erb"),
+      content => template("$stuff_folder/puppet/manifests/shorewall/policy.erb"),
       require  => Package["shorewall"]
   }
   file { "shorewall-interfaces ":
       path    => "/etc/shorewall/interfaces",
-      content => template("/vagrant/puppet/manifests/shorewall/interfaces.erb"),
+      content => template("$stuff_folder/puppet/manifests/shorewall/interfaces.erb"),
       require  => Package["shorewall"]
   }
   file { "shorewall-zones ":
       path    => "/etc/shorewall/zones",
-      content => template("/vagrant/puppet/manifests/shorewall/zones.erb"),
+      content => template("$stuff_folder/puppet/manifests/shorewall/zones.erb"),
       require  => Package["shorewall"]
   }
   file { "shorewall-rules ":
       path    => "/etc/shorewall/rules",
-      content => template("/vagrant/puppet/manifests/shorewall/rules.erb"),
+      content => template("$stuff_folder/puppet/manifests/shorewall/rules.erb"),
       require  => Package["shorewall"]
   }
 
