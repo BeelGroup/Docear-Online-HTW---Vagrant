@@ -14,6 +14,7 @@
 1. you can view the app in your browser with https://localhost:4443/
 2. If you change the puppet related files or deploy a new artifact call `vagrant reload`
     * to change the artifact to a new version, drop it into the artifacts folder and overwrite the existing file
+1. logs are provided in the local folder logs
 1. if you want to shutdown the virtual maschine call `vagrant halt`
 2. if you want to delete the virtual maschine call `vagrant destroy`
 
