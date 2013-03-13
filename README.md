@@ -6,18 +6,22 @@
      * click "Download Now"
 	 * tested with vagrant_1.0.5.msi on Windows 7 Home Premium 64bit
 
-## View in Browser
-* https://localhost:4443/
+## Steps to view app in Browser
+1. `vagrant up` creates the virtual maschine and starts it
+    * this may take a while the first time because it downloads an prepared image for Debian Squeeze
+	* assure your firewall does not block the download
+1. after this the virtual maschine is started and the prompt returns
+1. you can view the app in your browser with https://localhost:4443/
+2. If you change the puppet related files or deploy a new artifact call `vagrant reload`
+    * to change the artifact to a new version, drop it into the artifacts folder and overwrite the existing file
+1. if you want to shutdown the virtual maschine call `vagrant halt`
+2. if you want to delete the virtual maschine call `vagrant destroy`
+
+## SSH
+* Linux: vagrant ssh
+* Windows: Putty with user vagrant, password vagrant and port 2222 on 127.0.0.1
 
 ## Working with the VM
-
-### Setup Docear
-
-TODO
-
-### Setup Play
-
-TODO
 
 ### Virtual maschine lifecycle
 
@@ -35,11 +39,8 @@ TODO
 
 ### Ports
 
-* Vagrant forwards ports, for example port 80 on the virtual maschine is available via port 4080
-    * so you can use http://localhost:4080
-	* for other port forwards look at the Vagrantfile
-* port 80 of the virtual maschine (not your maschine!) has an apache with 2 loadbalanced play instances
-* port 8080/8081 contains docear instances
+* Vagrant forwards ports, for example port 22 on the virtual maschine is available via port 2222
+
 
 ### Addtitional notes
 
