@@ -86,7 +86,7 @@ class apache {
 
   file { "apache-conf":
       path    => "/etc/apache2/sites-available/default",
-      content => template("/vagrant/puppet/manifests/apache-virtual-host.erb"),
+      content => template("$stuff_folder/puppet/manifests/apache-virtual-host.erb"),
       require  => Package["apache2"]
   }
 
@@ -124,7 +124,7 @@ add_user { "$play_frontend_username":
 define add_init_script($name, $application_path, $start_command, $user, $group, $pid_file, $current_working_dir) {
 
   file {"/etc/init.d/$name":
-      content => template("/vagrant/puppet/manifests/init-with-pid.erb"),
+      content => template("$stuff_folder/puppet/manifests/init-with-pid.erb"),
       ensure => present,
       group => "root",
       owner => "root",
@@ -150,7 +150,7 @@ add_init_script {"$play_frontend_username":
 
 exec { 'unzip play':
       command => "rm -rf ${play_frontend_version} && unzip ${play_frontend_version}.zip && sudo rm -rf $play_application_path && sudo mv ${play_frontend_version} $play_application_path",
-      cwd => "/vagrant/artifacts",
+      cwd => "$stuff_folder/artifacts",
       require => [Package["packages"], Add_user["$play_frontend_username"]],
 }
 
@@ -195,7 +195,7 @@ add_user { "$mindmap_backend_username":
 
 exec { 'unzip mindmap_backend':
     command => "rm -rf ${mindmap_backend_unzipped_foldername} && unzip ${mindmap_backend_artifact}.zip && sudo rm -rf $mindmap_backend_application_path && sudo mv ${mindmap_backend_unzipped_foldername} $mindmap_backend_application_path",
-    cwd => "/vagrant/artifacts",
+    cwd => "$stuff_folder/artifacts",
     require => [Package["packages"], Add_user["$mindmap_backend_username"]],
     #onlyif => "test -f $mindmap_backend_application_path/freeplane.sh"
 }

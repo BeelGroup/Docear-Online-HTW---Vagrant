@@ -4,4 +4,5 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 export FACTER_deploy_environment='dev' 
-puppet apply --modulepath '/vagrant/puppet/modules' /vagrant/puppet/manifests/default.pp
+export FACTER_stuff_folder='/root/puppet-stuff'
+puppet apply --modulepath "${FACTER_stuff_folder}/puppet/modules" "${FACTER_stuff_folder}/puppet/manifests/default.pp"
