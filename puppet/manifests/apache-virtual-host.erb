@@ -22,3 +22,20 @@
         ProxyPassReverse / http://localhost:9000/
         ProxyPassReverse / http://localhost:9001/
 </VirtualHost>
+
+<VirtualHost *:443>
+    RequestHeader set X-Forwarded-Proto "https"
+    ProxyPreserveHost On
+	ServerAdmin webmaster@localhost
+
+    SSLEngine On
+    SSLCertificateFile /etc/ssl/certs/server.crt
+    SSLCertificateKeyFile /etc/ssl/private/server.key
+
+    <Location/>
+        SSLRequireSSL
+    </Location>
+
+    ProxyPass / http://127.0.0.1:9000/
+    ProxyPassReverse / http://127.0.0.1:9000/
+</VirtualHost>

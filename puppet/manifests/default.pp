@@ -242,3 +242,86 @@ file {"mindmap-backend-log-folder":
     #-L: Tell screen to turn on automatic output logging for the windows.
     #-d -m detach session, option for startup scripts
     #screen -L -d -m xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" bash freeplane.sh
+
+
+
+
+
+#SSL
+class ssl {
+    exec { 'apache-proxy':
+        command => "a2enmod proxy",
+        require => [apache2]
+    }
+    exec { 'apache-proxy':
+        command => "a2enmod ssl",
+        require => [apache2]
+    }
+    exec { 'apache-proxy':
+        command => "a2enmod headers",
+        require => [apache2]
+    }
+    
+    file { "ssl-server-crt ":
+        path    => "/etc/ssl/certs/server.crt",
+        content => template("/vagrant/puppet/manifests/ssl/new.cert.cert.erb"),
+        require  => Package["apache2"]
+    }
+    file { "ssl-server-key ":
+        path    => "/etc/ssl/private/server.key",
+        content => template("/vagrant/puppet/manifests/ssl/new.cert.key.erb"),
+        require  => Package["apache2"]
+    }
+}
+
+
+
+
+
+
+
+
+
+#FIREWALL
+package { "iptables":
+    ensure => "installed",
+    require => Exec['apt-get-update'],
+}
+
+class firewall {
+  package { "shorewall":
+    ensure => present,
+    require => Package["iptables"],
+  }
+
+  exec { "safe-restart-shorewall ":
+    command => "shorewall safe-restart",
+    refreshonly => true,
+  }
+
+  file { "shorewall-policy ":
+      path    => "/etc/shorewall/policy",
+      content => template("/vagrant/puppet/manifests/shorewall/policy.erb"),
+      require  => Package["shorewall"]
+  }
+  file { "shorewall-interfaces ":
+      path    => "/etc/shorewall/interfaces",
+      content => template("/vagrant/puppet/manifests/shorewall/interfaces.erb"),
+      require  => Package["shorewall"]
+  }
+  file { "shorewall-zones ":
+      path    => "/etc/shorewall/zones",
+      content => template("/vagrant/puppet/manifests/shorewall/zones.erb"),
+      require  => Package["shorewall"]
+  }
+  file { "shorewall-rules ":
+      path    => "/etc/shorewall/rules",
+      content => template("/vagrant/puppet/manifests/shorewall/rules.erb"),
+      require  => Package["shorewall"]
+  }
+
+  service { "shorewall":
+    ensure => running,
+    require => [Package["shorewall"], File["shorewall-policy"], File["shorewall-interfaces"], File["shorewall-zones"], File["shorewall-rules"]]
+  }
+}
