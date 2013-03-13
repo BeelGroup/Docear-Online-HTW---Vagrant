@@ -35,4 +35,13 @@
     ProxyPass / balancer://mycluster/
     ProxyPassReverse / http://localhost:9000/
     ProxyPassReverse / http://localhost:9001/
+
+    <% if @deploy_environment == "staging" %>
+    <Location / >
+        AuthName "Login"
+        AuthType Basic
+        AuthUserFile <%= @htpasswd_file_path %>
+        require valid-user
+    </Location>
+    <% end %>
 </VirtualHost>

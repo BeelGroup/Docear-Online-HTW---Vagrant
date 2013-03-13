@@ -44,7 +44,7 @@ define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group 
 }
 
 #http://projects.puppetlabs.com/projects/1/wiki/Debian_Apache2_Recipe_Patterns
-class apache {
+class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
   package { "apache2":
     ensure => present,
     require => Exec['apt-get-update'],
@@ -96,10 +96,15 @@ class apache {
       require  => Package["apache2"]
   }
 
+  file { "apache htpasswd":
+      path => "$htpasswd_file_path",
+      content => file("$stuff_folder/puppet/manifests/htpasswd"),
+  }
+
   file { "apache-conf":
       path    => "/etc/apache2/sites-available/default",
       content => template("$stuff_folder/puppet/manifests/apache-virtual-host.erb"),
-      require  => [Package["apache2"], Module["proxy"], Module["proxy_http"], Module["proxy_balancer"], Module["ssl"], Module["headers"], File["ssl-server-crt "], File["ssl-server-key "]],
+      require  => [Package["apache2"], Module["proxy"], Module["proxy_http"], Module["proxy_balancer"], Module["ssl"], Module["headers"], File["ssl-server-crt "], File["ssl-server-key "], File["apache htpasswd"]],
       notify => Exec["force-reload-apache2"],
   }
 
