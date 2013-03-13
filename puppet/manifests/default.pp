@@ -55,14 +55,12 @@ class apache {
       'present' : {
         exec { "/usr/sbin/a2enmod $name":
           unless => "/bin/readlink -e ${apache2_mods}-enabled/${name}.load",
-          notify => Exec["force-reload-apache2"],
           require => Package["apache2"],
         }
       }
       'absent': {
         exec { "/usr/sbin/a2dismod $name":
           onlyif => "/bin/readlink -e ${apache2_mods}-enabled/${name}.load",
-          notify => Exec["force-reload-apache2"],
           require => Package["apache2"],
         }
       }
@@ -83,11 +81,25 @@ class apache {
   module { "proxy":  }
   module { "proxy_http":  }
   module { "proxy_balancer":  }
+  module { "ssl":  }
+  module { "headers":  }
+
+  file { "ssl-server-crt ":
+      path    => "/etc/ssl/certs/server.crt",
+      content => template("/vagrant/puppet/manifests/ssl/new.cert.cert.erb"),
+      require  => Package["apache2"]
+  }
+  file { "ssl-server-key ":
+      path    => "/etc/ssl/private/server.key",
+      content => template("/vagrant/puppet/manifests/ssl/new.cert.key.erb"),
+      require  => Package["apache2"]
+  }
 
   file { "apache-conf":
       path    => "/etc/apache2/sites-available/default",
       content => template("$stuff_folder/puppet/manifests/apache-virtual-host.erb"),
-      require  => Package["apache2"]
+      require  => [Package["apache2"], Module["proxy"], Module["proxy_http"], Module["proxy_balancer"], Module["ssl"], Module["headers"], File["ssl-server-crt "], File["ssl-server-key "]],
+      notify => Exec["force-reload-apache2"],
   }
 
   service { "apache2":
@@ -259,42 +271,6 @@ service { "$mindmap_backend_username":
     #-L: Tell screen to turn on automatic output logging for the windows.
     #-d -m detach session, option for startup scripts
     #screen -L -d -m xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" bash freeplane.sh
-
-
-
-
-
-#SSL
-class ssl {
-    exec { 'apache-proxy':
-        command => "a2enmod proxy",
-        require => [apache2]
-    }
-    exec { 'apache-proxy':
-        command => "a2enmod ssl",
-        require => [apache2]
-    }
-    exec { 'apache-proxy':
-        command => "a2enmod headers",
-        require => [apache2]
-    }
-    
-    file { "ssl-server-crt ":
-        path    => "/etc/ssl/certs/server.crt",
-        content => template("/vagrant/puppet/manifests/ssl/new.cert.cert.erb"),
-        require  => Package["apache2"]
-    }
-    file { "ssl-server-key ":
-        path    => "/etc/ssl/private/server.key",
-        content => template("/vagrant/puppet/manifests/ssl/new.cert.key.erb"),
-        require  => Package["apache2"]
-    }
-}
-
-
-
-
-
 
 
 
