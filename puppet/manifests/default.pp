@@ -99,6 +99,7 @@ class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
   file { "apache htpasswd":
       path => "$htpasswd_file_path",
       content => file("$stuff_folder/puppet/manifests/htpasswd"),
+      require => Package["apache2"],
   }
 
   file { "apache-conf":
@@ -158,7 +159,7 @@ define add_init_script($name, $application_path, $start_command, $user, $group, 
 add_init_script {"$play_frontend_username":
   name => "$play_frontend_username",
   application_path => $play_application_path,
-  start_command => "$play_application_path/start -Dconfig.resource=$play_config_resource -Dhttp.port=9000 -Dhttp.address=127.0.0.1 -Ddb.default.url=jdbc:h2:file:/tmp/play-frontend/h2/data",
+  start_command => "$play_application_path/start -Dconfig.resource=$play_config_resource -Dlogger.resource=prod-logger.xml -Dhttp.port=9000 -Dhttp.address=127.0.0.1 -Ddb.default.url=jdbc:h2:file:/tmp/play-frontend/h2/data",
   user => "$play_frontend_username",
   group => "$play_frontend_username",
   pid_file => "$play_application_path/RUNNING_PID",
@@ -195,6 +196,15 @@ service { "$play_frontend_username":
     enable  => "true",
     hasstatus => false,
     require => Add_init_script["$play_frontend_username"],
+}
+
+file {"$play_frontend_username-log-folder":
+    ensure  => 'directory',
+    path => "/var/log/$play_frontend_username/",
+    owner => $play_frontend_username,
+    group => $play_frontend_username,
+    mode  => '0750',
+    require => Add_user[$play_frontend_username],
 }
 
 $mindmap_backend_username = "mindmap-backend"
