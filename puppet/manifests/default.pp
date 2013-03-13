@@ -83,6 +83,7 @@ class apache {
   module { "proxy_balancer":  }
   module { "ssl":  }
   module { "headers":  }
+  module { "rewrite":  }
 
   file { "ssl-server-crt ":
       path    => "/etc/ssl/certs/server.crt",
