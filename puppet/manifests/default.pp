@@ -6,7 +6,7 @@ exec { 'apt-get-update':
   command => '/usr/bin/apt-get update'
 }
 
-define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group = "$username", $groups = [], $ssh_key = "", $ssh_key_type = "", $password = "") {
+define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group = "$username", $groups = [], $ssh_key = "", $ssh_key_type = "") {
   user { $username:
       comment => "$full_name",
       home    => "$home",
@@ -14,8 +14,7 @@ define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group 
       managehome => true,
       gid => "$main_group",
       groups => $groups,
-      require => [Group["$username"]],
-      password => "$password"
+      require => [Group["$username"]]
   }
 
   if $ssh_key {
@@ -285,26 +284,67 @@ service { "$mindmap_backend_username":
 	
 	
 	
+import "users/*.pp"
 
-add_user { "michael":
-  username => "michael",
-  full_name => "Michael Schleichart",
-  home => "/home/michael",
-  groups => ["sudo"],
-  password => "secret", 
-  ssh_key => "AAAAB3NzaC1yc2EAAAADAQABAAABAQDCAxBVJryFsgIrdRz5TpgTmZ2GRnNfXhA2czfEucDJAcAJ5I+1t0gXUeBa9OGZu6bB/xuyu3FyjqvilWRrWfCehYBXc9uxK8wp0rxzbTN9RzTPFPB1tm0MPPENhLeV6N1mqBhhMT88toQw37P+AXDNUuA3W40wIelccnarMDii7X86BzlefXHs11dFQ5jdMUOFCoOky800dksxhOeHBgMUIqw+TalJ5J2XPtLrsgeWS/IjTVHjEAdhWlX/gPENFgnIar98cn47JKv3qnC6DidPueYz+uLMH1dNftgYZvMKldY6RqCZJlmtZ+4RMr4zHNwaQM4r96my60TD1tfFSOoz", 
-  ssh_key_type => "rsa"
-}
-add_user { "paul":
-  username => "paul",
-  full_name => "Paul Stueber",
-  home => "/home/paul",
-  groups => ["sudo"],
-  password => "secret", 
-  ssh_key => "AAAAB3NzaC1yc2EAAAADAQABAAABAQDCAxBVJryFsgIrdRz5TpgTmZ2GRnNfXhA2czfEucDJAcAJ5I+1t0gXUeBa9OGZu6bB/xuyu3FyjqvilWRrWfCehYBXc9uxK8wp0rxzbTN9RzTPFPB1tm0MPPENhLeV6N1mqBhhMT88toQw37P+AXDNUuA3W40wIelccnarMDii7X86BzlefXHs11dFQ5jdMUOFCoOky800dksxhOeHBgMUIqw+TalJ5J2XPtLrsgeWS/IjTVHjEAdhWlX/gPENFgnIar98cn47JKv3qnC6DidPueYz+uLMH1dNftgYZvMKldY6RqCZJlmtZ+4RMr4zHNwaQM4r96my60TD1tfFSOoz", 
-  ssh_key_type => "rsa"
+
+# add a line to a file
+# http://projects.puppetlabs.com/projects/1/wiki/Simple_Text_Patterns
+define line($file, $line, $ensure = 'present') {
+    case $ensure {
+        default : { err ( "unknown ensure value ${ensure}" ) }
+        present: {
+            exec { "/bin/echo '${line}' >> '${file}'":
+                unless => "/bin/grep -qFx '${line}' '${file}'"
+            }
+        }
+        absent: {
+            exec { "/bin/grep -vFx '${line}' '${file}' | /usr/bin/tee '${file}' > /dev/null 2>&1":
+              onlyif => "/bin/grep -qFx '${line}' '${file}'"
+            }
+        }
+    }
 }
 
+# disable password promp for sudo users
+line { "nopasswd-sudo":
+    file => "/etc/sudoers",
+    line => "%sudo ALL=(ALL) NOPASSWD: ALL",
+}
+# disable ssh login via password
+line { "no-pass-login":
+    file => "/etc/ssh/sshd_config",
+    line => "PasswordAuthentication no",
+}
+# disable root ssh login
+line { "no-root-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "PermitRootLogin no",
+}
+# 
+line { "RSAAuthentication-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "RSAAuthentication yes",
+}
+# 
+line { "PubkeyAuthentication-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "PubkeyAuthentication yes",
+}
+# 
+line { "UsePAM-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "UsePAM no",
+}
+# 
+line { "ChallengeResponseAuthentication-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "ChallengeResponseAuthentication no",
+}
+ 
+exec { 'reload-ssh':
+  command => 'sudo /etc/init.d/ssh reload',
+  require => [Line['no-pass-login'],Line['no-root-ssh'],Line['RSAAuthentication-ssh'],Line['PubkeyAuthentication-ssh'],Line['UsePAM-ssh'],Line['ChallengeResponseAuthentication-ssh']]
+}
 
 	
 	

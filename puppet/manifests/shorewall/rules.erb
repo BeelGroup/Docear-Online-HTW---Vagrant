@@ -26,6 +26,7 @@ ACCEPT    net       $FW             tcp          443
 ACCEPT    $FW       net             tcp          443
 ACCEPT    net       loc             tcp          443
 ACCEPT    net       $FW             all          22
+ACCEPT    net       $FW             all          2222
 
 # Permit all ICMP traffic FROM the firewall TO the net zone
 ACCEPT          $FW             net             icmp
