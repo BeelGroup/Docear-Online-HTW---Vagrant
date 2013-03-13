@@ -6,7 +6,7 @@ exec { 'apt-get-update':
   command => '/usr/bin/apt-get update'
 }
 
-define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group = "$username", $groups = [], $ssh_key = "", $ssh_key_type = "") {
+define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group = "$username", $groups = [], $ssh_key = "", $ssh_key_type = "", $password = "") {
   user { $username:
       comment => "$full_name",
       home    => "$home",
@@ -14,7 +14,8 @@ define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group 
       managehome => true,
       gid => "$main_group",
       groups => $groups,
-      require => [Group["$username"]]
+      require => [Group["$username"]],
+      password => "$password"
   }
 
   if $ssh_key {
@@ -273,6 +274,39 @@ service { "$mindmap_backend_username":
     #screen -L -d -m xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" bash freeplane.sh
 
 
+	
+
+	
+	
+	
+
+add_user { "michael":
+  username => "michael",
+  full_name => "Michael Schleichart",
+  home => "/home/michael",
+  groups => ["sudo"],
+  password => "secret", 
+  ssh_key => "AAAAB3NzaC1yc2EAAAADAQABAAABAQDCAxBVJryFsgIrdRz5TpgTmZ2GRnNfXhA2czfEucDJAcAJ5I+1t0gXUeBa9OGZu6bB/xuyu3FyjqvilWRrWfCehYBXc9uxK8wp0rxzbTN9RzTPFPB1tm0MPPENhLeV6N1mqBhhMT88toQw37P+AXDNUuA3W40wIelccnarMDii7X86BzlefXHs11dFQ5jdMUOFCoOky800dksxhOeHBgMUIqw+TalJ5J2XPtLrsgeWS/IjTVHjEAdhWlX/gPENFgnIar98cn47JKv3qnC6DidPueYz+uLMH1dNftgYZvMKldY6RqCZJlmtZ+4RMr4zHNwaQM4r96my60TD1tfFSOoz", 
+  ssh_key_type => "rsa"
+}
+add_user { "paul":
+  username => "paul",
+  full_name => "Paul Stueber",
+  home => "/home/paul",
+  groups => ["sudo"],
+  password => "secret", 
+  ssh_key => "AAAAB3NzaC1yc2EAAAADAQABAAABAQDCAxBVJryFsgIrdRz5TpgTmZ2GRnNfXhA2czfEucDJAcAJ5I+1t0gXUeBa9OGZu6bB/xuyu3FyjqvilWRrWfCehYBXc9uxK8wp0rxzbTN9RzTPFPB1tm0MPPENhLeV6N1mqBhhMT88toQw37P+AXDNUuA3W40wIelccnarMDii7X86BzlefXHs11dFQ5jdMUOFCoOky800dksxhOeHBgMUIqw+TalJ5J2XPtLrsgeWS/IjTVHjEAdhWlX/gPENFgnIar98cn47JKv3qnC6DidPueYz+uLMH1dNftgYZvMKldY6RqCZJlmtZ+4RMr4zHNwaQM4r96my60TD1tfFSOoz", 
+  ssh_key_type => "rsa"
+}
+
+
+	
+	
+
+
+	
+	
+	
 
 
 #FIREWALL
@@ -283,7 +317,7 @@ package { "iptables":
 
 class firewall {
   package { "shorewall":
-    ensure => present,
+    ensure => installed,
     require => Package["iptables"],
   }
 
@@ -292,24 +326,29 @@ class firewall {
     refreshonly => true,
   }
 
-  file { "shorewall-policy ":
+  file { "shorewall-policy":
       path    => "/etc/shorewall/policy",
       content => template("/vagrant/puppet/manifests/shorewall/policy.erb"),
       require  => Package["shorewall"]
   }
-  file { "shorewall-interfaces ":
+  file { "shorewall-interfaces":
       path    => "/etc/shorewall/interfaces",
       content => template("/vagrant/puppet/manifests/shorewall/interfaces.erb"),
       require  => Package["shorewall"]
   }
-  file { "shorewall-zones ":
+  file { "shorewall-zones":
       path    => "/etc/shorewall/zones",
       content => template("/vagrant/puppet/manifests/shorewall/zones.erb"),
       require  => Package["shorewall"]
   }
-  file { "shorewall-rules ":
+  file { "shorewall-rules":
       path    => "/etc/shorewall/rules",
       content => template("/vagrant/puppet/manifests/shorewall/rules.erb"),
+      require  => Package["shorewall"]
+  }
+  file { "shorewall-config":
+      path    => "/etc/default/shorewall",
+      content => template("/vagrant/puppet/manifests/shorewall/config.erb"),
       require  => Package["shorewall"]
   }
 
@@ -318,3 +357,4 @@ class firewall {
     require => [Package["shorewall"], File["shorewall-policy"], File["shorewall-interfaces"], File["shorewall-zones"], File["shorewall-rules"]]
   }
 }
+#include firewall
