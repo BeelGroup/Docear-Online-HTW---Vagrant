@@ -99,6 +99,7 @@ class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
   file { "apache htpasswd":
       path => "$htpasswd_file_path",
       content => file("$stuff_folder/puppet/manifests/htpasswd"),
+      require => Package["apache2"],
   }
 
   file { "apache-conf":
