@@ -5,6 +5,7 @@
 * http://vagrantup.com/
      * click "Download Now"
 	 * tested with vagrant_1.0.5.msi on Windows 7 Home Premium 64bit
+* checkout with depth 1: git clone --depth 1 git@github.com:Docear/HTW-vagrant.git
 
 ## Steps to view app in Browser
 1. `vagrant up` creates the virtual maschine and starts it
