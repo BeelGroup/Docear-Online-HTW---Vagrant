@@ -203,7 +203,7 @@ file {"$play_frontend_username-log-folder":
     path => "/var/log/$play_frontend_username/",
     owner => $play_frontend_username,
     group => $play_frontend_username,
-    mode  => '0750',
+    mode  => '0770',
     require => Add_user[$play_frontend_username],
 }
 
@@ -264,7 +264,7 @@ file {"mindmap-backend-log-folder":
   path => "/var/log/mindmap-backend/",
   owner => $mindmap_backend_username,
   group => $mindmap_backend_username,
-  mode  => '0750',
+  mode  => '0770',
 }
 
 add_init_script {"$mindmap_backend_username":
