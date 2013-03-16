@@ -5,6 +5,7 @@ Vagrant::Config.run do |config|
   config.vm.box = "debian_squeeze_andrew_mcnaughty"
   config.vm.box_url = "http://andrew.mcnaughty.com/downloads/squeeze64_puppet27.box"
   config.vm.share_folder "logs", "/var/log", "logs", :extra => 'dmode=777,fmode=777', :create => true
+  config.vm.share_folder "import", "/home/import", "artifacts", :extra => 'dmode=777,fmode=777', :create => true
 
   #convention: port a0bc goes to 4abc
   config.vm.forward_port 80, 4080

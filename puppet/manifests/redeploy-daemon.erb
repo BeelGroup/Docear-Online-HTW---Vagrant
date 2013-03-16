@@ -1,0 +1,85 @@
+#!/bin/sh
+
+set -x
+
+### BEGIN INIT INFO
+# Provides:          <%= @redeploy_name %>
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Should-Start:      $network
+# Should-Stop:       $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Demonized to deploy new artifacts of <%= @name %>.
+# Description:
+### END INIT INFO
+
+ARTIFACT="<%= @artifact %>"
+NAME="<%= @name %>"
+APPLICATION_NAME="<%= @redeploy_name %>"
+
+PID_FOLDER="/tmp/${APPLICATION_NAME}"
+PIDFILE="${PID_FOLDER}/RUNNING_PID"
+LOGFILE="${PID_FOLDER}/log.txt"
+
+mkdir -p ${PID_FOLDER}
+
+start() {
+    echo starting  > ${LOGFILE} 2>&1
+    start-stop-daemon --start --verbose --oknodo --background --make-pidfile --pidfile ${PIDFILE}  --exec /etc/init.d/${APPLICATION_NAME} -- run >> ${LOGFILE} 2>&1
+}
+
+run() {
+    echo running  >> ${LOGFILE} 2>&1
+    while true; do
+        echo waiting for changes of file ${ARTIFACT} on $(date) >> ${LOGFILE} 2>&1
+        inotifywait -e close_write ${ARTIFACT} >> ${LOGFILE} 2>&1 && \
+        echo redeploy ${ARTIFACT} >> ${LOGFILE} 2>&1 && \
+        service ${NAME} next >> ${LOGFILE} 2>&1
+    done
+}
+
+stop() {
+    echo stopping  >> ${LOGFILE} 2>&1
+    kill -9 `cat ${PIDFILE}`
+    RETVAL=$?
+    rm -rf ${PIDFILE}
+
+    if [ $RETVAL -eq 0 ]; then
+            echo "Stopping Application: ${APPLICATION_NAME} - Success"
+    else
+            echo "Stopping Application: ${APPLICATION_NAME} - Failure"
+            exit ${RETVAL}
+    fi
+    echo
+}
+clean() {
+    echo "clean not implemented"
+}
+
+case "$1" in
+        start)
+        clean
+        start
+        ;;
+        stop)
+        stop
+        ;;
+        restart|reload)
+        stop
+        sleep 10
+        start
+        ;;
+        status)
+        status
+        ;;
+        run)
+        run
+        ;;
+        next)
+        next
+        ;;
+        *)
+        echo "Usage: $0 {start|stop|restart|next}"
+esac
+exit 0

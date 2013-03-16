@@ -123,8 +123,8 @@ package { "packages":
   ensure => present,
   require => Exec['apt-get-update'],
 }
-
 $play_frontend_username = "play-frontend"
+$play_frontend_artifact_folder = "/home/import/$play_frontend_username"
 $play_frontend_home = "/var/$play_frontend_username"
 $play_application_path = "$play_frontend_home/current"
 $play_config_resource = $deploy_environment ? {
@@ -140,7 +140,7 @@ add_user { "$play_frontend_username":
   home => $play_frontend_home,
 }
 
-define add_init_script($name, $application_path, $start_command, $user, $group, $pid_file, $current_working_dir) {
+define add_init_script($name, $application_path, $start_command, $user, $group, $pid_file, $current_working_dir, $unzipped_foldername) {
 
   file {"/etc/init.d/$name":
       content => template("$stuff_folder/puppet/manifests/init-with-pid.erb"),
@@ -156,6 +156,34 @@ define add_init_script($name, $application_path, $start_command, $user, $group, 
   }
 }
 
+package {"inotify-tools":
+    require => Exec['apt-get-update'],
+}
+
+define add_redeploy_init_script($name, $artifact) {
+  $redeploy_name= "$name-redeploy"
+
+  file {"/etc/init.d/$redeploy_name":
+      content => template("$stuff_folder/puppet/manifests/redeploy-daemon.erb"),
+      ensure => present,
+      group => "root",
+      owner => "root",
+      mode => 750,
+  }
+
+  exec {"activate /etc/init.d/$redeploy_name":
+      command => "sudo update-rc.d $redeploy_name defaults",
+      require => [File["/etc/init.d/$redeploy_name"], Package["inotify-tools"]]
+  }
+
+  service { "$redeploy_name":
+      ensure => "running",
+      enable  => "true",
+      hasstatus => false,
+      require => Exec["activate /etc/init.d/$redeploy_name"]
+  }
+}
+
 add_init_script {"$play_frontend_username":
   name => "$play_frontend_username",
   application_path => $play_application_path,
@@ -164,12 +192,20 @@ add_init_script {"$play_frontend_username":
   group => "$play_frontend_username",
   pid_file => "$play_application_path/RUNNING_PID",
   current_working_dir =>"$play_frontend_home",
+  unzipped_foldername => $play_frontend_version,
   require => [Add_user[$play_frontend_username], File["$play_application_path start rights"]]
+}
+
+$play_frontend_artifact = "${play_frontend_artifact_folder}/${play_frontend_version}.zip"
+
+add_redeploy_init_script {"play redeploy daemon":
+  name => "${play_frontend_username}",
+  artifact => $play_frontend_artifact,
 }
 
 exec { 'unzip play':
       command => "rm -rf ${play_frontend_version} && unzip ${play_frontend_version}.zip && sudo rm -rf $play_application_path && sudo mv ${play_frontend_version} $play_application_path",
-      cwd => "$stuff_folder/artifacts",
+      cwd => "$play_frontend_artifact_folder",
       require => [Package["packages"], Add_user["$play_frontend_username"]],
 }
 
@@ -210,7 +246,8 @@ file {"$play_frontend_username-log-folder":
 $mindmap_backend_username = "mindmap-backend"
 $mindmap_backend_home = "/var/$mindmap_backend_username"
 $freeplane_version = "1.2.21"
-$mindmap_backend_artifact = "freeplane_bin-$freeplane_version"
+$mindmap_backend_artifact_folder = "/home/import/$mindmap_backend_username"
+$mindmap_backend_artifact = "$mindmap_backend_artifact_folder/freeplane_bin-$freeplane_version.zip"
 $mindmap_backend_unzipped_foldername = "freeplane-$freeplane_version"
 $mindmap_backend_application_path = "$mindmap_backend_home/current"
 $mindmap_backend_start_script = "$mindmap_backend_application_path/freeplane.sh"
@@ -222,8 +259,8 @@ add_user { "$mindmap_backend_username":
 }
 
 exec { 'unzip mindmap_backend':
-    command => "rm -rf ${mindmap_backend_unzipped_foldername} && unzip ${mindmap_backend_artifact}.zip && sudo rm -rf $mindmap_backend_application_path && sudo mv ${mindmap_backend_unzipped_foldername} $mindmap_backend_application_path",
-    cwd => "$stuff_folder/artifacts",
+    command => "rm -rf ${mindmap_backend_unzipped_foldername} && unzip ${mindmap_backend_artifact} && sudo rm -rf $mindmap_backend_application_path && sudo mv ${mindmap_backend_unzipped_foldername} $mindmap_backend_application_path",
+    cwd => "$mindmap_backend_artifact_folder",
     require => [Package["packages"], Add_user["$mindmap_backend_username"]],
     #onlyif => "test -f $mindmap_backend_application_path/freeplane.sh"
 }
@@ -275,6 +312,7 @@ add_init_script {"$mindmap_backend_username":
     group => "$mindmap_backend_username",
     pid_file => "$mindmap_backend_application_path/RUNNING_PID",
     current_working_dir => "$mindmap_backend_application_path",
+    unzipped_foldername => $mindmap_backend_unzipped_foldername,
     require => [File["mindmap-backend-log-folder"], File["$mindmap_backend_application_path start rights"]]
 }
 
@@ -284,13 +322,11 @@ service { "$mindmap_backend_username":
   hasstatus => false,
   require => Add_init_script["$mindmap_backend_username"]
 }
-    #-L: Tell screen to turn on automatic output logging for the windows.
-    #-d -m detach session, option for startup scripts
-    #screen -L -d -m xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" bash freeplane.sh
 
-
-	
-
+add_redeploy_init_script {"$mindmap_backend_username redeploy daemon":
+    name => "$mindmap_backend_username",
+    artifact => $mindmap_backend_artifact,
+}
 	
 	
 	

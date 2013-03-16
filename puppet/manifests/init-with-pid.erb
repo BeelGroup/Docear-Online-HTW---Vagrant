@@ -28,6 +28,7 @@ GROUP=<%= @group %>
 PIDFILE="<%= @pid_file %>"
 START_CMD="<%= @start_command %>"
 CURRENT_WORKING_DIR="<%= @current_working_dir %>"
+UNZIPPED_FOLDERNAME="<%= @unzipped_foldername %>"
 
 # source function library
 # -> comented out for ubuntu . /etc/init.d/functions
@@ -43,23 +44,52 @@ start() {
                 echo "starting ${APPLICATION_NAME} - Success"
         else
                 echo "starting ${APPLICATION_NAME} - Failure"
+                exit ${RETVAL}
         fi
         echo
 }
 stop() {
         kill -9 `cat ${PIDFILE}`
         RETVAL=$?
-        rm -rf ${PIDFILE}
+        #rm -rf ${PIDFILE}
 
         if [ $RETVAL -eq 0 ]; then
                 echo "Stopping Application: ${APPLICATION_NAME} - Success"
         else
                 echo "Stopping Application: ${APPLICATION_NAME} - Failure"
+                exit ${RETVAL}
         fi
         echo
 }
 clean() {
         rm -f ${PIDFILE}
+}
+next() {
+        echo next
+        service_name=${USER}
+        prev_folder=/var/${service_name}/prev
+        current_folder=/var/${service_name}/current
+        next_folder=/var/${service_name}/next
+        import_folder=/home/import/${service_name}
+        #todo version independent
+        unzipped_folder="${UNZIPPED_FOLDERNAME}"
+
+
+        cd ${import_folder} && \
+        unzip *.zip && \
+        rm -rf ${next_folder} && \
+        mkdir ${next_folder} && \
+        mv ${unzipped_folder}/* ${next_folder} && \
+        rm -rf ${unzipped_folder} && \
+        service ${service_name} stop
+        rm -rf ${prev_folder} && \
+        echo moving current to prev && \
+        mv ${current_folder} ${prev_folder} && \
+        echo moving next to current && \
+        mv ${next_folder} ${current_folder} && \
+        chown -R ${service_name}:${service_name} ${prev_folder} ${current_folder} && \
+        service ${service_name} start
+        #todo schlägt das fehl, alte Version starten
 }
 case "$1" in
         start)
@@ -77,7 +107,10 @@ case "$1" in
         status)
         status
         ;;
+        next)
+        next
+        ;;
         *)
-        echo "Usage: $0 {start|stop|restart}"
+        echo "Usage: $0 {start|stop|restart|next}"
 esac
 exit 0
