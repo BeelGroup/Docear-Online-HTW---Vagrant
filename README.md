@@ -8,6 +8,8 @@
 * checkout with depth 1: git clone --depth 1 git@github.com:Docear/HTW-vagrant.git
 
 ## Steps to view app in Browser
+1. put freeplane zip into artifacts/mindmap-backend
+1. put play zip into artifacts/play-frontend
 1. `vagrant up` creates the virtual maschine and starts it
     * this may take a while the first time because it downloads an prepared image for Debian Squeeze
 	* assure your firewall does not block the download
