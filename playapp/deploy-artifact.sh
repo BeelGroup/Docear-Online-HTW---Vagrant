@@ -1,1 +1,0 @@
-sbt clean dist && mv dist/*.zip ../artifacts/play
