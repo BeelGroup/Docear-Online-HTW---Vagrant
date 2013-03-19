@@ -88,12 +88,14 @@ class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
   file { "ssl-server-crt ":
       path    => "/etc/ssl/certs/server.crt",
       content => template("$stuff_folder/puppet/manifests/ssl/new.cert.cert.erb"),
-      require  => Package["apache2"]
+      require  => Package["apache2"],
+      replace => false,
   }
   file { "ssl-server-key ":
       path    => "/etc/ssl/private/server.key",
       content => template("$stuff_folder/puppet/manifests/ssl/new.cert.key.erb"),
-      require  => Package["apache2"]
+      require  => Package["apache2"],
+      replace => false,
   }
 
   file { "apache htpasswd":
