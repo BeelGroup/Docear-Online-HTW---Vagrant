@@ -13,6 +13,7 @@ RUNNING_PID
 log.txt
 classes
 *.log
+/logs
 
 artifacts/play/*
 !artifacts/play/README.md
