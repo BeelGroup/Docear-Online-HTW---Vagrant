@@ -7,10 +7,10 @@ deploy_env=prod
 if [ `hostname` == "v22013031569111142.yourvserver.net" ]; then
     deploy_env="staging"
 fi
-sudo service play-frontend-redeploy stop
-sudo service play-frontend stop
-sudo service mindmap-backend-redeploy stop
-sudo service mindmap-backend stop
+service play-frontend-redeploy stop
+service play-frontend stop
+service mindmap-backend-redeploy stop
+service mindmap-backend stop
 
 export FACTER_deploy_environment=$deploy_env
 export FACTER_stuff_folder='/root/puppet-stuff'
