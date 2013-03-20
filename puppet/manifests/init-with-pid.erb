@@ -49,7 +49,7 @@ start() {
         echo
 }
 stop() {
-        kill -9 `cat ${PIDFILE}`
+        kill -15 `cat ${PIDFILE}`
         RETVAL=$?
         #rm -rf ${PIDFILE}
 

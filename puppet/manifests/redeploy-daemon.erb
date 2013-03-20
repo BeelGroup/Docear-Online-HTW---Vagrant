@@ -41,7 +41,7 @@ run() {
 
 stop() {
     echo stopping  >> ${LOGFILE} 2>&1
-    kill -15 `cat ${PIDFILE}`
+    kill -9 `cat ${PIDFILE}`
     RETVAL=$?
     rm -rf ${PIDFILE}
 
