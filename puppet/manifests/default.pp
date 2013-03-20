@@ -153,7 +153,7 @@ define add_init_script($name, $application_path, $start_command, $user, $group, 
   }
 
   exec {"activate /etc/init.d/$name":
-      command => "sudo update-rc.d $name defaults",
+      command => "update-rc.d $name defaults",
       require => File["/etc/init.d/$name"]
   }
 }
@@ -174,7 +174,7 @@ define add_redeploy_init_script($name, $artifact) {
   }
 
   exec {"activate /etc/init.d/$redeploy_name":
-      command => "sudo update-rc.d $redeploy_name defaults && sudo service $redeploy_name restart",
+      command => "update-rc.d $redeploy_name defaults",
       require => [File["/etc/init.d/$redeploy_name"], Package["inotify-tools"]],
       notify => Service["$redeploy_name"],
   }
@@ -342,7 +342,7 @@ line { "ChallengeResponseAuthentication-ssh":
 }
  
 exec { 'reload-ssh':
-  command => 'sudo /etc/init.d/ssh reload',
+  command => '/etc/init.d/ssh reload',
   require => [Line['no-pass-login'],Line['no-root-ssh'],Line['RSAAuthentication-ssh'],Line['PubkeyAuthentication-ssh'],Line['UsePAM-ssh'],Line['ChallengeResponseAuthentication-ssh']]
 }
 
