@@ -8,12 +8,13 @@
 * checkout with depth 1: git clone --depth 1 git@github.com:Docear/HTW-vagrant.git
 
 ## Steps to view app in Browser
-1. put freeplane zip into artifacts/mindmap-backend
-1. put play zip into artifacts/play-frontend
 1. `vagrant up` creates the virtual maschine and starts it
     * this may take a while the first time because it downloads an prepared image for Debian Squeeze
 	* assure your firewall does not block the download
 1. after this the virtual maschine is started and the prompt returns
+1. put freeplane zip into artifacts/mindmap-backend
+1. put play zip into artifacts/play-frontend
+1. if it not starts connect with ssh and run `sudo service mindmap-backend-redeploy restart; sudo service play-frontend-redeploy restart; sudo touch /home/import/mindmap-backend/freeplane_bin-1.2.21.zip; sudo touch /home/import/play-frontend/docear-frontend-0.1-SNAPSHOT.zip`
 1. you can view the app in your browser with https://localhost:4443/
 2. If you change the puppet related files or deploy a new artifact call `vagrant reload`
     * to change the artifact to a new version, drop it into the artifacts folder and overwrite the existing file

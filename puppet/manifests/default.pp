@@ -174,15 +174,15 @@ define add_redeploy_init_script($name, $artifact) {
   }
 
   exec {"activate /etc/init.d/$redeploy_name":
-      command => "sudo update-rc.d $redeploy_name defaults",
-      require => [File["/etc/init.d/$redeploy_name"], Package["inotify-tools"]]
+      command => "sudo update-rc.d $redeploy_name defaults && sudo service $redeploy_name restart",
+      require => [File["/etc/init.d/$redeploy_name"], Package["inotify-tools"]],
+      notify => Service["$redeploy_name"],
   }
 
   service { "$redeploy_name":
       ensure => "running",
       enable  => "true",
       hasstatus => false,
-      require => Exec["activate /etc/init.d/$redeploy_name"]
   }
 }
 
@@ -205,20 +205,14 @@ add_redeploy_init_script {"play redeploy daemon":
   artifact => $play_frontend_artifact,
 }
 
-exec { 'unzip play':
-      command => "rm -rf ${play_frontend_version} && unzip ${play_frontend_version}.zip && sudo rm -rf $play_application_path && sudo mv ${play_frontend_version} $play_application_path",
-      cwd => "$play_frontend_artifact_folder",
-      require => [Package["packages"], Add_user["$play_frontend_username"]],
-}
-
 file {"$play_frontend_home rights":
       path => $play_application_path,
-      ensure  => 'present',
+      ensure  => 'directory',
       mode  => '0664',
       owner => $play_frontend_username,
       group => $play_frontend_username,
       recurse => true,
-      require => [Exec['unzip play']]
+      require => [Package["packages"], Add_user["$play_frontend_username"]],
 }
 
 file {"$play_application_path start rights":
@@ -227,13 +221,6 @@ file {"$play_application_path start rights":
     group => $play_frontend_username,
     mode  => '0750',
     require => [File["$play_frontend_home rights"]]
-}
-
-service { "$play_frontend_username":
-    ensure  => "running",
-    enable  => "true",
-    hasstatus => false,
-    require => Add_init_script["$play_frontend_username"],
 }
 
 file {"$play_frontend_username-log-folder":
@@ -260,13 +247,6 @@ add_user { "$mindmap_backend_username":
     home => $mindmap_backend_home,
 }
 
-exec { 'unzip mindmap_backend':
-    command => "rm -rf ${mindmap_backend_unzipped_foldername} && unzip ${mindmap_backend_artifact} && sudo rm -rf $mindmap_backend_application_path && sudo mv ${mindmap_backend_unzipped_foldername} $mindmap_backend_application_path",
-    cwd => "$mindmap_backend_artifact_folder",
-    require => [Package["packages"], Add_user["$mindmap_backend_username"]],
-    #onlyif => "test -f $mindmap_backend_application_path/freeplane.sh"
-}
-
 file {"$mindmap_backend_application_path rights":
     path => "$mindmap_backend_application_path",
     ensure  => 'present',
@@ -274,28 +254,7 @@ file {"$mindmap_backend_application_path rights":
     owner => $mindmap_backend_username,
     group => $mindmap_backend_username,
     recurse => true,
-    require => [Exec['unzip mindmap_backend']]
-}
-
-#workaround for https://github.com/Docear/HTW-Frontend/issues/136
-exec { 'correct line endings for freeplane.sh':
-    command => "fromdos $mindmap_backend_start_script",
-    cwd => "$mindmap_backend_application_path",
-    require => [Package["tofrodos"], Exec['unzip mindmap_backend']],
-  #onlyif => "test -f $mindmap_backend_application_path/freeplane.sh"
-}
-package { "tofrodos":
-    ensure => present,
-    require => Exec['apt-get-update'],
-}
-
-file {"$mindmap_backend_application_path start rights":
-    path => "$mindmap_backend_start_script",
-    ensure  => 'present',
-    owner => $mindmap_backend_username,
-    group => $mindmap_backend_username,
-    mode  => '0750',
-    require => [File["$mindmap_backend_application_path rights"], Exec['correct line endings for freeplane.sh']]
+    require => [Package["packages"], Add_user["$mindmap_backend_username"]],
 }
 
 file {"mindmap-backend-log-folder":
@@ -315,14 +274,7 @@ add_init_script {"$mindmap_backend_username":
     pid_file => "$mindmap_backend_application_path/RUNNING_PID",
     current_working_dir => "$mindmap_backend_application_path",
     unzipped_foldername => $mindmap_backend_unzipped_foldername,
-    require => [File["mindmap-backend-log-folder"], File["$mindmap_backend_application_path start rights"]]
-}
-
-service { "$mindmap_backend_username":
-  ensure => "running",
-  enable  => "true",
-  hasstatus => false,
-  require => Add_init_script["$mindmap_backend_username"]
+    require => [File["mindmap-backend-log-folder"]]
 }
 
 add_redeploy_init_script {"$mindmap_backend_username redeploy daemon":
