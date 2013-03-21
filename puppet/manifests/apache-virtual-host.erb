@@ -36,7 +36,7 @@
     ProxyPassReverse / http://localhost:9000/
     ProxyPassReverse / http://localhost:9001/
 
-    <% if @deploy_environment == "staging" || @deploy_environment == "prod" %>
+    <% if @deploy_environment == "staging" %>
     <Location / >
         AuthName "Login"
         AuthType Basic
