@@ -349,6 +349,16 @@ exec { 'reload-ssh':
 	
 	
 
+	
+#Server Time NTP: http://articles.slicehost.com/2010/11/8/using-ntp-to-sync-time-on-debian
+package { "ntp":
+    ensure => present,
+    require => Exec['apt-get-update'],
+}
+exec { 'set-correct-servertime':
+    command => "/etc/init.d/ntp start",
+    require => [Package["ntp"]],
+}
 
 	
 	
