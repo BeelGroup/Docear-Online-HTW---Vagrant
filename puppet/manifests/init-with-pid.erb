@@ -88,8 +88,8 @@ next() {
         #todo version independent
         unzipped_folder="${UNZIPPED_FOLDERNAME}"
 
-
         cd ${import_folder} && \
+        rm -rf ${unzipped_folder} && \
         unzip *.zip && \
         rm -rf ${next_folder} && \
         mkdir ${next_folder} && \
