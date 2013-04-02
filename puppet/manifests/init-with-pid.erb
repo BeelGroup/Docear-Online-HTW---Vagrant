@@ -99,9 +99,6 @@ next() {
         #todo version independent
         unzipped_folder="${UNZIPPED_FOLDERNAME}"
 
-        mkdir -p ${current_folder}
-
-
         cd ${import_folder} && \
         rm -rf ${unzipped_folder} && \
         unzip *.zip && \
@@ -109,6 +106,8 @@ next() {
         mkdir ${next_folder} && \
         mv ${unzipped_folder}/* ${next_folder} && \
         service ${service_name} stop
+
+        mkdir -p ${current_folder}
 
         rm -rf ${prev_folder} && \
         echo moving current to prev && \
