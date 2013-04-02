@@ -36,6 +36,7 @@ RETVAL=0
 
 #you can't start directly in folder with start script
 cd ${CURRENT_WORKING_DIR}
+chown -R ${USER}:${USER} /home/${USER}
 
 start() {
         start-stop-daemon --chdir ${CURRENT_WORKING_DIR} --start -p "${PIDFILE}" --background --chuid ${USER}:${GROUP} --exec /bin/bash -- ${START_CMD}
@@ -99,7 +100,6 @@ next() {
         unzipped_folder="${UNZIPPED_FOLDERNAME}"
 
         mkdir -p ${current_folder}
-        chown -R ${USER}:${USER} /home/${USER}
 
 
         cd ${import_folder} && \
