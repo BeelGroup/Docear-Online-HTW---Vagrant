@@ -3,6 +3,9 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
+BASEDIR=$(dirname $0)
+cd ${BASEDIR}
+
 deploy_env=prod
 if [ `hostname` == "v22013031569111142.yourvserver.net" ]; then
     deploy_env="staging"
