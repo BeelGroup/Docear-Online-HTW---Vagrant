@@ -36,7 +36,7 @@ RETVAL=0
 
 #you can't start directly in folder with start script
 cd ${CURRENT_WORKING_DIR}
-chown -R ${USER}:${USER} /home/${USER}
+chown -R ${USER}:${USER} ~${USER}
 
 start() {
         start-stop-daemon --chdir ${CURRENT_WORKING_DIR} --start -p "${PIDFILE}" --background --chuid ${USER}:${GROUP} --exec /bin/bash -- ${START_CMD}
