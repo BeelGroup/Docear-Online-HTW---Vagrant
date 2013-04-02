@@ -95,9 +95,7 @@ next() {
 
         service ${service_name} stop
 
-        prev_folder=/var/${service_name}/prev
         current_folder=/var/${service_name}/current
-        next_folder=/var/${service_name}/next
         import_folder=/home/import/${service_name}
         #todo version independent
         unzipped_folder="${UNZIPPED_FOLDERNAME}"
@@ -105,17 +103,10 @@ next() {
         cd ${import_folder} && \
         rm -rf ${unzipped_folder} && \
         unzip *.zip && \
-        rm -rf ${next_folder} && \
-        mkdir ${next_folder} && \
-        mv ${unzipped_folder}/* ${next_folder} && \
-        rm -rf ${prev_folder}
-
-        echo moving current to prev && \
-        mv ${current_folder} ${prev_folder}
-
-        echo moving next to current && \
-        mv ${next_folder} ${current_folder} && \
-        chown -R ${service_name}:${service_name} ${current_folder} && \
+        rm -rf ${current_folder} && \
+        mkdir ${current_folder} && \
+        mv ${unzipped_folder}/* ${current_folder}
+        chown -R ${service_name}:${service_name} ${current_folder}
         service ${service_name} start
         #todo schlägt das fehl, alte Version starten
 }
