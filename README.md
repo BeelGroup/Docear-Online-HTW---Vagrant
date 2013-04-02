@@ -60,3 +60,4 @@
 # Puppet
 * http://docs.puppetlabs.com/references/2.7.latest/
 * http://docs.puppetlabs.com/guides/language_guide.html
+
