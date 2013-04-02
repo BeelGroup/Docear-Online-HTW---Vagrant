@@ -107,7 +107,8 @@ next() {
         rm -rf ${next_folder} && \
         mkdir ${next_folder} && \
         mv ${unzipped_folder}/* ${next_folder} && \
-        service ${service_name} stop && \
+        service ${service_name} stop
+
         rm -rf ${prev_folder} && \
         echo moving current to prev && \
         mv ${current_folder} ${prev_folder} && \
