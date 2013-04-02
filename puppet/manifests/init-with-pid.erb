@@ -45,7 +45,7 @@ start() {
                 echo "starting ${APPLICATION_NAME} - Success"
         else
                 echo "starting ${APPLICATION_NAME} - Failure"
-                exit ${RETVAL}
+                return ${RETVAL}
         fi
         echo
 }
@@ -68,7 +68,7 @@ stop() {
                 echo "Stopping Application: ${APPLICATION_NAME} - Success"
         else
                 echo "Stopping Application: ${APPLICATION_NAME} - Failure"
-                exit ${RETVAL}
+                return ${RETVAL}
         fi
         echo
 }
@@ -79,13 +79,13 @@ status() {
         PID=`cat ${PIDFILE}` || true
         if [ -n "$PID" ]; then
             echo "${APPLICATION_NAME} is running (pid $PID)."
-            exit 0
+            return 0
         else
             echo "${APPLICATION_NAME} is NOT running."
             if [ -e "$PIDFILE" ]; then
-                exit 1
+                return 1
             else
-                exit 3
+                return 3
             fi
         fi
 }
