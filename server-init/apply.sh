@@ -18,3 +18,8 @@ service mindmap-backend stop
 export FACTER_deploy_environment=$deploy_env
 export FACTER_stuff_folder='/home/import/server-configuration'
 puppet apply --modulepath "${FACTER_stuff_folder}/puppet/modules" "${FACTER_stuff_folder}/puppet/manifests/default.pp"
+
+service play-frontend-redeploy start
+service play-frontend start
+service mindmap-backend-redeploy start
+service mindmap-backend start
