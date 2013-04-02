@@ -92,6 +92,9 @@ status() {
 next() {
         echo next
         service_name=${USER}
+
+        service ${service_name} stop
+
         prev_folder=/var/${service_name}/prev
         current_folder=/var/${service_name}/current
         next_folder=/var/${service_name}/next
@@ -104,8 +107,8 @@ next() {
         unzip *.zip && \
         rm -rf ${next_folder} && \
         mkdir ${next_folder} && \
-        mv ${unzipped_folder}/* ${next_folder} && \
-        service ${service_name} stop
+        mv ${unzipped_folder}/* ${next_folder}
+
 
         mkdir -p ${current_folder}
 
