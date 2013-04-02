@@ -52,7 +52,7 @@ stop() {
         kill -15 `cat ${PIDFILE}`
         RETVAL=$?
 
-        for i in `seq 1 1 10`
+        for i in `seq 1 1 20`
         do
            if [ -e "${PIDFILE}" ]
            then
@@ -100,9 +100,9 @@ next() {
 
         mkdir -p ${current_folder}
 
-        rm -rf ${unzipped_folder}
 
         cd ${import_folder} && \
+        rm -rf ${unzipped_folder} && \
         unzip *.zip && \
         rm -rf ${next_folder} && \
         mkdir ${next_folder} && \
