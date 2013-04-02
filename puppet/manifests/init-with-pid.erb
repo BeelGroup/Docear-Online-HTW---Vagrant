@@ -52,7 +52,7 @@ stop() {
         kill -15 `cat ${PIDFILE}`
         RETVAL=$?
 
-        for i in `seq 1 2 3 4`
+        for i in `seq 1 1 10`
         do
            if [ -e "${PIDFILE}" ]
            then
