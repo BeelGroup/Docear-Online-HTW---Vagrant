@@ -64,6 +64,20 @@ stop() {
 clean() {
         rm -f ${PIDFILE}
 }
+status() {
+        PID=`cat ${PIDFILE}` || true
+        if [ -n "$PID" ]; then
+            echo "${APPLICATION_NAME} is running (pid $PID)."
+            exit 0
+        else
+            echo "${APPLICATION_NAME} is NOT running."
+            if [ -e "$PIDFILE" ]; then
+                exit 1
+            else
+                exit 3
+            fi
+        fi
+}
 next() {
         echo next
         service_name=${USER}
@@ -111,6 +125,6 @@ case "$1" in
         next
         ;;
         *)
-        echo "Usage: $0 {start|stop|restart|next}"
+        echo "Usage: $0 {start|stop|restart|status|next}"
 esac
 exit 0
