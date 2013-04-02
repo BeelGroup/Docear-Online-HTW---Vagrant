@@ -51,6 +51,16 @@ start() {
 stop() {
         kill -15 `cat ${PIDFILE}`
         RETVAL=$?
+
+        for i in `seq 1 2 3 4`
+        do
+           if [ -e "${PIDFILE}" ]
+           then
+             echo "${APPLICATION_NAME} still up, sleeping ${i} seconds"
+             sleep ${i}
+           fi
+        done
+
         #rm -rf ${PIDFILE}
 
         if [ $RETVAL -eq 0 ]; then
@@ -88,14 +98,15 @@ next() {
         #todo version independent
         unzipped_folder="${UNZIPPED_FOLDERNAME}"
 
+        mkdir -p ${current_folder}
+
         cd ${import_folder} && \
         rm -rf ${unzipped_folder} && \
         unzip *.zip && \
         rm -rf ${next_folder} && \
         mkdir ${next_folder} && \
         mv ${unzipped_folder}/* ${next_folder} && \
-        rm -rf ${unzipped_folder} && \
-        service ${service_name} stop
+        service ${service_name} stop && \
         rm -rf ${prev_folder} && \
         echo moving current to prev && \
         mv ${current_folder} ${prev_folder} && \
