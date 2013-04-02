@@ -107,17 +107,15 @@ next() {
         unzip *.zip && \
         rm -rf ${next_folder} && \
         mkdir ${next_folder} && \
-        mv ${unzipped_folder}/* ${next_folder}
+        mv ${unzipped_folder}/* ${next_folder} && \
+        rm -rf ${prev_folder}
 
-
-        mkdir -p ${current_folder}
-
-        rm -rf ${prev_folder} && \
         echo moving current to prev && \
-        mv ${current_folder} ${prev_folder} && \
+        mv ${current_folder} ${prev_folder}
+
         echo moving next to current && \
         mv ${next_folder} ${current_folder} && \
-        chown -R ${service_name}:${service_name} ${prev_folder} ${current_folder} && \
+        chown -R ${service_name}:${service_name} ${current_folder} && \
         service ${service_name} start
         #todo schlägt das fehl, alte Version starten
 }
