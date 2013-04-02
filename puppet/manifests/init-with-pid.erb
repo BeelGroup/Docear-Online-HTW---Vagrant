@@ -36,7 +36,7 @@ RETVAL=0
 
 #you can't start directly in folder with start script
 cd ${CURRENT_WORKING_DIR}
-chown -R ${USER}:${USER} ~${USER}
+chown -R ${USER}:${USER} /var/${USER}
 
 start() {
         start-stop-daemon --chdir ${CURRENT_WORKING_DIR} --start -p "${PIDFILE}" --background --chuid ${USER}:${GROUP} --exec /bin/bash -- ${START_CMD}
@@ -108,7 +108,8 @@ next() {
         rm -rf ${next_folder} && \
         mkdir ${next_folder} && \
         mv ${unzipped_folder}/* ${next_folder} && \
-        service ${service_name} stop && \
+        service ${service_name} stop
+
         rm -rf ${prev_folder} && \
         echo moving current to prev && \
         mv ${current_folder} ${prev_folder} && \
