@@ -402,15 +402,31 @@ class firewall {
       content => template("$stuff_folder/puppet/manifests/shorewall/rules.erb"),
       require  => Package["shorewall"]
   }
-  file { "shorewall-config":
-      path    => "/etc/default/shorewall",
-      content => template("/vagrant/puppet/manifests/shorewall/config.erb"),
+  file { "shorewall-masq":
+      path    => "/etc/shorewall/masq",
+      content => template("$stuff_folder/puppet/manifests/shorewall/masq.erb"),
       require  => Package["shorewall"]
   }
-
-  service { "shorewall":
-    ensure => running,
-    require => [Package["shorewall"], File["shorewall-policy"], File["shorewall-interfaces"], File["shorewall-zones"], File["shorewall-rules"]]
+#  file { "shorewall-config":
+#      path    => "/etc/default/shorewall",
+#      content => template("/vagrant/puppet/manifests/shorewall/config.erb"),
+#      require  => Package["shorewall"]
+#  }
+  line { "shorewall-config-1":
+      file => "/etc/default/shorewall",
+      line => "startup=0",
+      ensure => "absent"
   }
+  line { "shorewall-config-2":
+      file => "/etc/default/shorewall",
+      line => "startup=1",
+      ensure => "present"
+  }
+
+  exec { "start-shorewall":
+    command => "shorewall safe-restart",
+    require => [Package["shorewall"], File["shorewall-policy"], File["shorewall-interfaces"], File["shorewall-zones"], File["shorewall-rules"], Line["shorewall-config-1"], Line["shorewall-config-2"]]
+  }
+  
 }
-#include firewall
+include firewall

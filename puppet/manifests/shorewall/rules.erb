@@ -19,14 +19,12 @@
 SECTION NEW
 
 # Drop Ping from the "bad" net zone.. and prevent your log from being flooded..
-Ping(DROP)      net             $FW
-ACCEPT    net       $FW             tcp          80
-ACCEPT    $FW       net             tcp          80
-ACCEPT    net       $FW             tcp          443
-ACCEPT    $FW       net             tcp          443
-ACCEPT    net       loc             tcp          443
-ACCEPT    net       $FW             all          22
-ACCEPT    net       $FW             all          2222
+Ping(DROP)      net             fw
+ACCEPT    loc       net             tcp          80,443
+ACCEPT    all       dmz             tcp          80,443
+ACCEPT    all       loc             tcp          80,443
+ACCEPT    all       fw              tcp          80,443
+ACCEPT    all       dmz             tcp          22,2222,12577
 
 # Permit all ICMP traffic FROM the firewall TO the net zone
-ACCEPT          $FW             net             icmp
+ACCEPT          fw             net             icmp

@@ -12,7 +12,12 @@
 # For information about entries in this file, type "man shorewall-policy"
 ###############################################################################
 #SOURCE         DEST            POLICY          LOG LEVEL       LIMIT:BURST
-$FW             net             ACCEPT
+# DROP all incoming traffic that doesn't match our rules (/rules)
 net             all             DROP            info
-# The FOLLOWING POLICY MUST BE LAST
+dmz             all             REJECT            info
+# no outgoing traffic unless allowd in our rules
+loc             all             REJECT          info
+# we trust our firewall
+fw              all             ACCEPT
+# The FOLLOWING POLICY MUST BE LAST - rejects every thing that we might have missed
 all             all             REJECT          info
