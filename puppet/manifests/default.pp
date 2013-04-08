@@ -422,11 +422,5 @@ class firewall {
       line => "startup=1",
       ensure => "present"
   }
-
-  exec { "start-shorewall":
-    command => "shorewall safe-restart",
-    require => [Package["shorewall"], File["shorewall-policy"], File["shorewall-interfaces"], File["shorewall-zones"], File["shorewall-rules"], Line["shorewall-config-1"], Line["shorewall-config-2"]]
-  }
-  
 }
 include firewall
