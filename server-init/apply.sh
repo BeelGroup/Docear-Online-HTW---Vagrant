@@ -17,8 +17,13 @@ service play-frontend stop
 service mindmap-backend-redeploy stop
 service mindmap-backend stop
 
+echo "applying puppet scripts"
 export FACTER_deploy_environment=$deploy_env
-export FACTER_stuff_folder='/home/import/server-configuration'
+stuff_older='/home/import/server-configuration'
+if [ -d "/vagrant" ]; then
+    stuff_older='/vagrant'
+fi
+export FACTER_stuff_folder="$stuff_older"
 puppet apply --modulepath "${FACTER_stuff_folder}/puppet/modules" "${FACTER_stuff_folder}/puppet/manifests/default.pp"
 
 service play-frontend-redeploy start
