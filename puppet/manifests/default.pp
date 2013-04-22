@@ -371,7 +371,9 @@ package { "ntp":
     ensure => present,
     require => Exec['apt-get-update'],
 }
-exec { 'set-correct-servertime':
-    command => "/etc/init.d/ntp start",
+
+service { 'ntp':
+    ensure => "running",
+    enable  => "true",
     require => [Package["ntp"]],
 }
