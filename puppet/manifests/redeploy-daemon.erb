@@ -54,17 +54,10 @@ run() {
 
 stop() {
     echo stopping  >> ${LOGFILE} 2>&1
+    echo "Stopping Application: ${APPLICATION_NAME}
     kill -15 `cat ${PIDFILE}`
-    RETVAL=$?
+    killall ${APPLICATION_NAME}
     rm -rf ${PIDFILE}
-
-    if [ $RETVAL -eq 0 ]; then
-            echo "Stopping Application: ${APPLICATION_NAME} - Success"
-    else
-            echo "Stopping Application: ${APPLICATION_NAME} - Failure"
-            return ${RETVAL}
-    fi
-    echo
 }
 clean() {
     echo "clean not implemented"
