@@ -53,7 +53,7 @@ stop() {
         kill -15 `cat ${PIDFILE}`
         RETVAL=$?
 
-        for i in `seq 1 1 20`
+        for i in `seq 1 1 10`
         do
            if [ -e "${PIDFILE}" ]
            then
@@ -62,7 +62,7 @@ stop() {
            fi
         done
 
-        #rm -rf ${PIDFILE}
+        rm -rf ${PIDFILE}
 
         if [ $RETVAL -eq 0 ]; then
                 echo "Stopping Application: ${APPLICATION_NAME} - Success"
