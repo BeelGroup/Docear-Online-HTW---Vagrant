@@ -200,6 +200,14 @@ add_init_script {"$play_frontend_username":
 
 $play_frontend_artifact = "${play_frontend_artifact_folder}/${play_frontend_version}.zip"
 
+file {"$play_frontend_artifact_folder":
+  ensure => "directory",
+  group => "$play_frontend_username",
+  owner => "$play_frontend_username",
+  mode => 770,
+  require => Add_user["$play_frontend_username"]
+}
+
 add_redeploy_init_script {"play redeploy daemon":
   name => "${play_frontend_username}",
   artifact => $play_frontend_artifact,
@@ -208,11 +216,11 @@ add_redeploy_init_script {"play redeploy daemon":
 file {"$play_frontend_home rights":
       path => $play_application_path,
       ensure  => 'directory',
-      mode  => '0664',
+      mode  => '0660',
       owner => $play_frontend_username,
       group => $play_frontend_username,
       recurse => true,
-      require => [Package["packages"], Add_user["$play_frontend_username"]],
+      require => [Package["packages"], Add_user["$play_frontend_username"], File["$play_frontend_artifact_folder"]],
 }
 
 file {"$play_application_path start rights":
@@ -247,6 +255,14 @@ add_user { "$mindmap_backend_username":
     home => $mindmap_backend_home,
 }
 
+file {"$mindmap_backend_artifact_folder":
+  ensure => "directory",
+  group => "$mindmap_backend_username",
+  owner => "$mindmap_backend_username",
+  mode => 770,
+  require => Add_user["$mindmap_backend_username"]
+}
+
 file {"$mindmap_backend_application_path rights":
     path => "$mindmap_backend_application_path",
     ensure  => 'present',
@@ -254,7 +270,7 @@ file {"$mindmap_backend_application_path rights":
     owner => $mindmap_backend_username,
     group => $mindmap_backend_username,
     recurse => true,
-    require => [Package["packages"], Add_user["$mindmap_backend_username"]],
+    require => [Package["packages"], Add_user["$mindmap_backend_username"], File["$mindmap_backend_artifact_folder"]],
 }
 
 file {"mindmap-backend-log-folder":
