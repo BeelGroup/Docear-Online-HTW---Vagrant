@@ -18,30 +18,53 @@ ARTIFACT="<%= @artifact %>"
 NAME="<%= @name %>"
 APPLICATION_NAME="<%= @redeploy_name %>"
 
-DIR="/tmp/${APPLICATION_NAME}"
-mkdir -p $DIR
-LOGFILE="$DIR/log.txt"
+PID_FOLDER="/tmp/${APPLICATION_NAME}"
+PIDFILE="${PID_FOLDER}/RUNNING_PID"
+LOGFILE="${PID_FOLDER}/log.txt"
+
+mkdir -p ${PID_FOLDER}
 
 
 start() {
+    echo try to stop running demon, it should not be started twice
+    stop
     echo starting  > ${LOGFILE} 2>&1
-    start-stop-daemon --start --verbose --oknodo --background --exec /etc/init.d/${APPLICATION_NAME} -- run >> ${LOGFILE} 2>&1
+    start-stop-daemon --start --verbose --background --make-pidfile --pidfile ${PIDFILE}  --exec /etc/init.d/${APPLICATION_NAME} -- run $$ >> ${LOGFILE} 2>&1
 }
 
 run() {
-    echo running  >> ${LOGFILE} 2>&1
-    while true; do
+    for_pid=$1
+    echo run redeploy demon $APPLICATION_NAME for pid $for_pid
+    echo run redeploy demon $APPLICATION_NAME for pid $for_pid  >> ${LOGFILE} 2>&1
+    pid_pid_file=`cat $PIDFILE`
+    while [ "$pid_pid_file" == "$for_pid" ]; do
         echo waiting for changes of file ${ARTIFACT} on $(date) >> ${LOGFILE} 2>&1
-        inotifywait -e close_write ${ARTIFACT} >> ${LOGFILE} 2>&1 && \
-        echo redeploy ${ARTIFACT} >> ${LOGFILE} 2>&1 && \
-        service ${NAME} next >> ${LOGFILE} 2>&1
+        echo waiting for changes of file ${ARTIFACT} on $(date)
+        inotifywait -e close_write ${ARTIFACT} >> ${LOGFILE} 2>&1
+        pid_pid_file=`cat $PIDFILE`
+        if [ "$pid_pid_file" == "$for_pid" ]; then
+            echo redeploy ${ARTIFACT} >> ${LOGFILE} 2>&1 && \
+            service ${NAME} next >> ${LOGFILE} 2>&1
+        else
+            echo "outdated run"
+        fi
     done
+    echo "leave run"
 }
 
 stop() {
     echo stopping  >> ${LOGFILE} 2>&1
-    echo "Stopping Application: ${APPLICATION_NAME}"
-    killall ${APPLICATION_NAME}
+    kill -15 `cat ${PIDFILE}`
+    RETVAL=$?
+    rm -rf ${PIDFILE}
+
+    if [ $RETVAL -eq 0 ]; then
+            echo "Stopping Application: ${APPLICATION_NAME} - Success"
+    else
+            echo "Stopping Application: ${APPLICATION_NAME} - Failure"
+            return ${RETVAL}
+    fi
+    echo
 }
 clean() {
     echo "clean not implemented"
@@ -64,7 +87,7 @@ case "$1" in
         status
         ;;
         run)
-        run
+        run $2
         ;;
         next)
         next
