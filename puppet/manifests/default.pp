@@ -189,7 +189,7 @@ define add_redeploy_init_script($name, $artifact) {
 add_init_script {"$play_frontend_username":
   name => "$play_frontend_username",
   application_path => $play_application_path,
-  start_command => "$play_application_path/start -Dconfig.resource=$play_config_resource -Dlogger.resource=prod-logger.xml -Dhttp.port=9000 -Dhttp.address=127.0.0.1 -Ddb.default.url=jdbc:h2:file:/tmp/play-frontend/h2/data",
+  start_command => "$play_application_path/start -Xms128M -Xmx512m -Dconfig.resource=$play_config_resource -Dlogger.resource=prod-logger.xml -Dhttp.port=9000 -Dhttp.address=127.0.0.1 -Ddb.default.url=jdbc:h2:file:/tmp/play-frontend/h2/data",
   user => "$play_frontend_username",
   group => "$play_frontend_username",
   pid_file => "$play_application_path/RUNNING_PID",
