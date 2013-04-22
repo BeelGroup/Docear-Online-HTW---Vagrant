@@ -18,15 +18,14 @@ ARTIFACT="<%= @artifact %>"
 NAME="<%= @name %>"
 APPLICATION_NAME="<%= @redeploy_name %>"
 
-PID_FOLDER="/tmp/${APPLICATION_NAME}"
-PIDFILE="${PID_FOLDER}/RUNNING_PID"
-LOGFILE="${PID_FOLDER}/log.txt"
+DIR="/tmp/${APPLICATION_NAME}"
+mkdir -p $DIR
+LOGFILE="$DIR/log.txt"
 
-mkdir -p ${PID_FOLDER}
 
 start() {
     echo starting  > ${LOGFILE} 2>&1
-    start-stop-daemon --start --verbose --oknodo --background --make-pidfile --pidfile ${PIDFILE}  --exec /etc/init.d/${APPLICATION_NAME} -- run >> ${LOGFILE} 2>&1
+    start-stop-daemon --start --verbose --oknodo --background --exec /etc/init.d/${APPLICATION_NAME} -- run >> ${LOGFILE} 2>&1
 }
 
 run() {
@@ -41,17 +40,8 @@ run() {
 
 stop() {
     echo stopping  >> ${LOGFILE} 2>&1
-    kill -9 `cat ${PIDFILE}`
-    RETVAL=$?
-    rm -rf ${PIDFILE}
-
-    if [ $RETVAL -eq 0 ]; then
-            echo "Stopping Application: ${APPLICATION_NAME} - Success"
-    else
-            echo "Stopping Application: ${APPLICATION_NAME} - Failure"
-            exit ${RETVAL}
-    fi
-    echo
+    echo "Stopping Application: ${APPLICATION_NAME}"
+    killall ${APPLICATION_NAME}
 }
 clean() {
     echo "clean not implemented"
