@@ -377,3 +377,18 @@ service { 'ntp':
     enable  => "true",
     require => [Package["ntp"]],
 }
+
+
+if $deploy_environment == 'dev' {
+    notify{ "deploy of services": }
+
+    exec { "service $mindmap_backend_username next":
+        require => Add_init_script["$mindmap_backend_username"],
+    }
+
+    exec { "service $play_frontend_username next":
+      require => Add_init_script["$play_frontend_username"],
+    }
+} else {
+    notify{"no autostart of services in the current deploy environment: ${deploy_environment}": }
+}
