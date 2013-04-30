@@ -28,9 +28,15 @@ start() {
     start-stop-daemon --start --verbose --background --exec /etc/init.d/${APPLICATION_NAME} -- run
 }
 
+run_shutdown() {
+    echo kill process and subprocesses
+    kill $(jobs -p)
+    exit 0
+}
+
 run() {
     echo run redeploy demon $APPLICATION_NAME
-    trap 'kill $(jobs -p); exit' SIGINT SIGTERM EXIT
+    trap run_shutdown SIGINT SIGTERM EXIT
     should_run=1
     while [ "$should_run" == "1" ]; do
         echo waiting for changes of file ${ARTIFACT} on $(date)
@@ -53,10 +59,12 @@ run() {
 stop() {
     echo Stopping Application: ${APPLICATION_NAME}
     kill -9 $(ps aux | grep "${APPLICATION_NAME} run" | awk '{print $2}')
+    kill -9 $(ps aux | grep "inotifywait -e close_write /home/import/${NAME}/" | awk '{print $2}')
     return 0
 }
 clean() {
     echo clean
+    stop
 }
 
 case "$1" in

@@ -266,7 +266,7 @@ file {"$mindmap_backend_artifact_folder":
 file {"$mindmap_backend_application_path rights":
     path => "$mindmap_backend_application_path",
     ensure  => 'present',
-    mode  => '0664',
+    mode  => '0764',
     owner => $mindmap_backend_username,
     group => $mindmap_backend_username,
     recurse => true,
