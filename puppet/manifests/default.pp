@@ -372,10 +372,14 @@ package { "ntp":
     require => Exec['apt-get-update'],
 }
 
+exec { "set timezone":
+    command => 'echo "Europe/Berlin" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata'
+}
+
 service { 'ntp':
     ensure => "running",
     enable  => "true",
-    require => [Package["ntp"]],
+    require => [[Package["ntp"]], Exec["set timezone"]]
 }
 
 
