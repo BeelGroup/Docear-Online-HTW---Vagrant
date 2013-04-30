@@ -6,8 +6,7 @@ Vagrant::Config.run do |config|
   #config.ssh.port = 12577
   
   config.vm.box = "docear_debian_squeeze_v2"
-  #TODO fill this with URL of image
-  #config.vm.box_url = "http://andrew.mcnaughty.com/downloads/squeeze64_puppet27.box"
+  config.vm.box_url = "http://downloads.docear.org/distribute/vagrant-box/docear_debian_squeeze_v2.box"
   config.vm.share_folder "logs", "/var/log", "logs", :extra => 'dmode=777,fmode=777', :create => true
   config.vm.share_folder "import", "/home/import", "artifacts", :extra => 'dmode=777,fmode=777', :create => true
   
