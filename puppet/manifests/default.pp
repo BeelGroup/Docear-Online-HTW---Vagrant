@@ -104,6 +104,12 @@ class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
       require => Package["apache2"],
   }
 
+  $domain = $deploy_environment ? {
+      'dev' =>  "localhost",
+      'staging' => "staging.my.docear.org",
+      'prod' => "my.docear.org"
+  }
+
   file { "apache-conf":
       path    => "/etc/apache2/sites-available/default",
       content => template("$stuff_folder/puppet/manifests/apache-virtual-host.erb"),

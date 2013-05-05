@@ -5,6 +5,11 @@
 </VirtualHost>
 
 <VirtualHost *:443>
+    ServerName <%= @domain %>
+    RewriteEngine on
+    RewriteCond %{HTTP_HOST} !^<%= @domain %>
+    RewriteRule ^/(.*)$ https://<%= @domain %>/$1 [L,R=301]
+
     RequestHeader set X-Forwarded-Proto "https"
     SSLEngine On
     SSLCertificateFile /etc/ssl/certs/server.crt
