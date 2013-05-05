@@ -242,12 +242,11 @@ file {"$play_frontend_username-log-folder":
 
 $mindmap_backend_username = "mindmap-backend"
 $mindmap_backend_home = "/var/$mindmap_backend_username"
-$freeplane_version = "1.2.21"
 $mindmap_backend_artifact_folder = "/home/import/$mindmap_backend_username"
-$mindmap_backend_artifact = "$mindmap_backend_artifact_folder/freeplane_bin-$freeplane_version.zip"
-$mindmap_backend_unzipped_foldername = "freeplane-$freeplane_version"
+$mindmap_backend_artifact = "$mindmap_backend_artifact_folder/freeplane_server.zip"
+$mindmap_backend_unzipped_foldername = "freeplane"
 $mindmap_backend_application_path = "$mindmap_backend_home/current"
-$mindmap_backend_start_script = "$mindmap_backend_application_path/freeplane.sh"
+$mindmap_backend_start_script = "$mindmap_backend_application_path/freeplane-server.sh"
 
 add_user { "$mindmap_backend_username":
     username => "$mindmap_backend_username",
@@ -284,7 +283,7 @@ file {"mindmap-backend-log-folder":
 add_init_script {"$mindmap_backend_username":
     name => "$mindmap_backend_username",
     application_path => $mindmap_backend_application_path,
-    start_command => "xvfb-run ${mindmap_backend_application_path}/freeplane.sh",
+    start_command => "xvfb-run ${mindmap_backend_application_path}/freeplane-server.sh",
     user => "$mindmap_backend_username",
     group => "$mindmap_backend_username",
     pid_file => "$mindmap_backend_application_path/RUNNING_PID",

@@ -15,11 +15,9 @@ classes
 *.log
 /logs
 
-artifacts/play/*
-!artifacts/play/README.md
-artifacts/docear/*
-!artifacts/docear/README.md
-artifacts/version.txt
+artifacts/*
+!artifacts/mindmap-backend/README.md
+!artifacts/play-frontend/README.md
 
 
 

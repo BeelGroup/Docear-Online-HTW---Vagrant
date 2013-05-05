@@ -29,5 +29,5 @@ puppet apply --modulepath "${FACTER_stuff_folder}/puppet/modules" "${FACTER_stuf
 service play-frontend-redeploy start
 service play-frontend start
 service mindmap-backend-redeploy start
-chmod ug+x /var/mindmap-backend/current/freeplane.sh
+chmod ug+x /var/mindmap-backend/current/freeplane-server.sh
 service mindmap-backend start
