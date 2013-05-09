@@ -50,6 +50,12 @@ class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
     require => Exec['apt-get-update'],
   }
 
+  file {"/var/log/apache2":
+    ensure => "directory",
+    group => "root",
+    owner => "root"
+  }
+
   define module ( $ensure = 'present') {
     case $ensure {
       'present' : {
