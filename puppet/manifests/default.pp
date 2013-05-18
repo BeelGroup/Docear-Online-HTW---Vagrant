@@ -2,10 +2,6 @@ notify{"The deploy_environment is: ${deploy_environment}": }
 
 Exec { path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/bin", ] }
 
-exec { 'apt-get-update':
-  command => '/usr/bin/apt-get update'
-}
-
 import "common.pp"
 
 #http://projects.puppetlabs.com/projects/1/wiki/Debian_Apache2_Recipe_Patterns
@@ -337,27 +333,6 @@ exec { 'reload-ssh':
   command => '/etc/init.d/ssh reload',
   require => [Line['no-pass-login'],Line['no-root-ssh'],Line['RSAAuthentication-ssh'],Line['PubkeyAuthentication-ssh'],Line['UsePAM-ssh'],Line['ChallengeResponseAuthentication-ssh']]
 }
-
-	
-	
-
-	
-#Server Time NTP: http://articles.slicehost.com/2010/11/8/using-ntp-to-sync-time-on-debian
-package { "ntp":
-    ensure => present,
-    require => Exec['apt-get-update'],
-}
-
-exec { "set timezone":
-    command => 'echo "Europe/Berlin" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata'
-}
-
-service { 'ntp':
-    ensure => "running",
-    enable  => "true",
-    require => [[Package["ntp"]], Exec["set timezone"]]
-}
-
 
 if $deploy_environment == 'dev' {
     notify{ "deploy of services": }
