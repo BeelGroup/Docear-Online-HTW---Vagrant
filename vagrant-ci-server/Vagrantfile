@@ -8,10 +8,16 @@ Vagrant::Config.run do |config|
 
   #convention: use ports over 5000
   config.vm.forward_port 80, 5080
+  config.vm.forward_port 9290, 5290
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "../puppet/manifests"
     puppet.manifest_file = "ci.pp"
     puppet.module_path  = "../puppet/modules"
+
+    puppet.facter = [
+        [ "deploy_environment", "dev" ],
+        [ "manifest_folder", "/tmp/vagrant-puppet/manifests" ],
+    ]
   end
 end

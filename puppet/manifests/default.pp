@@ -274,25 +274,6 @@ add_redeploy_init_script {"$mindmap_backend_username redeploy daemon":
 	
 import "users/*.pp"
 
-
-# add a line to a file
-# http://projects.puppetlabs.com/projects/1/wiki/Simple_Text_Patterns
-define line($file, $line, $ensure = 'present') {
-    case $ensure {
-        default : { err ( "unknown ensure value ${ensure}" ) }
-        present: {
-            exec { "/bin/echo '${line}' >> '${file}'":
-                unless => "/bin/grep -qFx '${line}' '${file}'"
-            }
-        }
-        absent: {
-            exec { "/bin/grep -vFx '${line}' '${file}' | /usr/bin/tee '${file}' > /dev/null 2>&1":
-              onlyif => "/bin/grep -qFx '${line}' '${file}'"
-            }
-        }
-    }
-}
-
 # disable password promp for sudo users
 line { "nopasswd-sudo":
     file => "/etc/sudoers",
