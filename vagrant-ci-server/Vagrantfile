@@ -5,6 +5,13 @@ Vagrant::Config.run do |config|
   
   config.vm.box = "docear_debian_squeeze_v2"
   config.vm.box_url = "http://downloads.docear.org/distribute/vagrant-box/docear_debian_squeeze_v2.box"
-  
+
+  #convention: use ports over 5000
   config.vm.forward_port 80, 5080
+
+  config.vm.provision :puppet do |puppet|
+    puppet.manifests_path = "../puppet/manifests"
+    puppet.manifest_file = "ci.pp"
+    puppet.module_path  = "../puppet/modules"
+  end
 end
