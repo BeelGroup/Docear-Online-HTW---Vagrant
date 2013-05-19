@@ -8,6 +8,7 @@ Vagrant::Config.run do |config|
 
   #convention: use ports over 5000
   config.vm.forward_port 80, 5080
+  config.vm.forward_port 443, 5443
   config.vm.forward_port 9290, 5290
 
   config.vm.provision :puppet do |puppet|

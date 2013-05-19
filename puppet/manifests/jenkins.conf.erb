@@ -36,13 +36,13 @@ JENKINS_LOG=/var/log/jenkins/$NAME.log
 MAXOPENFILES=8192
 
 # port for HTTP connector (default 8080; disable with -1)
-HTTP_PORT=9290
+HTTP_PORT=<%= @jenkinsPort %>
 
 # port for AJP connector (disabled by default)
 AJP_PORT=-1
 
 # servlet context, important if you want to use apache proxying
-PREFIX=/jenkins
+PREFIX=/<%= @jenkinsContextPath %>
 
 # arguments to pass to jenkins.
 # --javahome=$JAVA_HOME

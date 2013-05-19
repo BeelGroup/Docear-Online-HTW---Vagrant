@@ -57,6 +57,11 @@
 * don't change files directly in this reposity. Fork this repository and create pull requests.
 * Docear should log into the logs folder, so you can read it without ssh but with your favorite text editor
 
+# CI maschine
+* `cd vagrant-ci-server`
+* lifecycle as in web server
+* https://localhost:5443/ci
+
 # Puppet
 * http://docs.puppetlabs.com/references/2.7.latest/
 * http://docs.puppetlabs.com/guides/language_guide.html
