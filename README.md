@@ -60,6 +60,9 @@
 # CI maschine
 * `cd vagrant-ci-server`
 * lifecycle as in web server
+* you need to install the thin-backup plugin and restore the configuration via https://localhost:5443/ci/thinBackup/?
+    * don't forget to mark "Restore plugins"
+    * restart Jenkins
 * https://localhost:5443/ci
 
 # Puppet

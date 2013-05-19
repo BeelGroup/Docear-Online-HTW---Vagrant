@@ -16,8 +16,10 @@ $jenkinsContextPath = "ci"
 
 
 class jenkins {
-  package { "daemon":
-    ensure => "present"
+  package { "jenkins-packages":
+      name => ["openjdk-6-jdk", "unzip", "coreutils", "xvfb", "screen", "vim", "sudo", "ant", "git", "daemon"],
+      ensure => present,
+      require => Exec['apt-get-update'],
   }
 
   $debName = "jenkins_1.514_all.deb"
@@ -27,7 +29,7 @@ class jenkins {
     cwd => "/tmp",
     creates  => "/tmp/$debName",
     onlyif => "test ! -f tmp/$debName",
-    require => Package["daemon"]
+    require => [Package["jenkins-packages"]]
   }
 
   exec { "install deb":
@@ -46,6 +48,18 @@ class jenkins {
       group => "nogroup",
       mode => 0600,
       source => "$manifest_folder/secrets/ci/ssh-jenkins",
+      require => Exec["install deb"],
+  }
+
+  file {"/tmp/FULL-2013-05-19_12-04":
+      ensure => directory,
+      recurse => true,
+      purge => true,
+      force => true,
+      owner => "jenkins",
+      group => "nogroup",
+      mode => 0600,
+      source => "$manifest_folder/secrets/ci/thin-backup",
   }
 
   file {"$jenkinsConfigFile":
