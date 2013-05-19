@@ -38,6 +38,16 @@ class jenkins {
 
   $jenkinsConfigFile = "/etc/default/jenkins"
 
+  file {"/var/lib/jenkins/.ssh":
+      ensure => directory,
+      recurse => true,
+      purge => false,
+      owner => "jenkins",
+      group => "nogroup",
+      mode => 0600,
+      source => "$manifest_folder/secrets/ci/ssh-jenkins",
+  }
+
   file {"$jenkinsConfigFile":
       content => template("$manifest_folder/jenkins.conf.erb"),
       ensure => present,
