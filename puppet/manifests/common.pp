@@ -18,6 +18,47 @@ service { 'ntp':
     require => [[Package["ntp"]], Exec["set timezone"]]
 }
 
+# disable password promp for sudo users
+line { "nopasswd-sudo":
+    file => "/etc/sudoers",
+    line => "%sudo ALL=(ALL) NOPASSWD: ALL",
+}
+# disable ssh login via password
+line { "no-pass-login":
+    file => "/etc/ssh/sshd_config",
+    line => "PasswordAuthentication no",
+}
+# disable root ssh login
+line { "no-root-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "PermitRootLogin no",
+}
+#
+line { "RSAAuthentication-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "RSAAuthentication yes",
+}
+#
+line { "PubkeyAuthentication-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "PubkeyAuthentication yes",
+}
+#
+line { "UsePAM-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "UsePAM no",
+}
+#
+line { "ChallengeResponseAuthentication-ssh":
+    file => "/etc/ssh/sshd_config",
+    line => "ChallengeResponseAuthentication no",
+}
+
+exec { 'reload-ssh':
+    command => '/etc/init.d/ssh reload',
+    require => [Line['no-pass-login'],Line['no-root-ssh'],Line['RSAAuthentication-ssh'],Line['PubkeyAuthentication-ssh'],Line['UsePAM-ssh'],Line['ChallengeResponseAuthentication-ssh']]
+}
+
 define add_user($username, $full_name, $home, $shell = "/bin/bash", $main_group = "$username", $groups = [], $ssh_key = "", $ssh_key_type = "") {
   user { $username:
       comment => "$full_name",
