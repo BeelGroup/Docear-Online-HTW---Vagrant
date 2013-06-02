@@ -45,7 +45,7 @@ class jenkins {
       recurse => true,
       purge => false,
       owner => "jenkins",
-      group => "nogroup",
+      group => "root",
       mode => 0600,
       source => "$manifest_folder/secrets/ci/ssh-jenkins",
       require => Exec["install deb"],
@@ -57,9 +57,18 @@ class jenkins {
       purge => true,
       force => true,
       owner => "jenkins",
-      group => "nogroup",
+      group => "root",
       mode => 0600,
       source => "$manifest_folder/secrets/ci/thin-backup",
+  }
+
+  file {"jvm-repo":
+      path => "/var/www/repo",
+      ensure => directory,
+      owner => "jenkins",
+      group => "root",
+      mode => 640,
+      require => Exec["install deb"],
   }
 
   file {"$jenkinsConfigFile":

@@ -4,6 +4,9 @@
         RewriteCond %{HTTPS} off
         RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
     </Location>
+
+    Options -Indexes
+    DocumentRoot /var/www/
 </VirtualHost>
 
 <VirtualHost *:443>
