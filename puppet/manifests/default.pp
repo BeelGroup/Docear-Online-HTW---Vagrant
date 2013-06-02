@@ -178,10 +178,10 @@ $play_frontend_artifact = "${play_frontend_artifact_folder}/${play_frontend_vers
 
 file {"$play_frontend_artifact_folder":
   ensure => "directory",
-  group => "$play_frontend_username",
-  owner => "$play_frontend_username",
+  group => "import",
+  owner => "import",
   mode => 770,
-  require => Add_user["$play_frontend_username"]
+  require => Add_user["import"]
 }
 
 add_redeploy_init_script {"play redeploy daemon":
@@ -232,10 +232,10 @@ add_user { "$mindmap_backend_username":
 
 file {"$mindmap_backend_artifact_folder":
   ensure => "directory",
-  group => "$mindmap_backend_username",
-  owner => "$mindmap_backend_username",
+  group => "import",
+  owner => "import",
   mode => 770,
-  require => Add_user["$mindmap_backend_username"]
+  require => Add_user["import"]
 }
 
 file {"$mindmap_backend_application_path rights":
