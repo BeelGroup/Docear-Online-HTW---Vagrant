@@ -14,6 +14,7 @@ Vagrant::Config.run do |config|
   #convention: port a0bc goes to 4abc
   config.vm.forward_port 80, 4080
   config.vm.forward_port 443, 4443
+  config.vm.forward_port 27017, 4117
   config.vm.forward_port 8080, 4880
   config.vm.forward_port 8081, 4881
   config.vm.forward_port 9000, 4900

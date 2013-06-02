@@ -4,6 +4,9 @@ Exec { path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/bin"
 
 import "common.pp"
 
+import "mongodb.pp"
+include mongodb
+
 #http://projects.puppetlabs.com/projects/1/wiki/Debian_Apache2_Recipe_Patterns
 class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
   package { "apache2":
