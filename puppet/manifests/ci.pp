@@ -67,7 +67,7 @@ class jenkins {
       ensure => directory,
       owner => "jenkins",
       group => "root",
-      mode => 640,
+      mode => 644,
       require => Exec["install deb"],
   }
 
