@@ -17,7 +17,7 @@ $jenkinsContextPath = "ci"
 
 class jenkins {
   package { "jenkins-packages":
-      name => ["openjdk-6-jdk", "unzip", "coreutils", "xvfb", "screen", "vim", "sudo", "ant", "git", "daemon"],
+      name => ["openjdk-6-jdk", "unzip", "coreutils", "xvfb", "screen", "vim", "sudo", "ant", "git", "daemon", "inotify-tools"],
       ensure => present,
       require => Exec['apt-get-update'],
   }
