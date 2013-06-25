@@ -41,7 +41,7 @@
     </Proxy>
     ProxyPreserveHost On
     ProxyPass /balancer-manager !
-    ProxyPass / balancer://mycluster/
+    ProxyPass / balancer://mycluster/ nocanon
     ProxyPassReverse / http://localhost:9000/
     ProxyPassReverse / http://localhost:9001/
 
