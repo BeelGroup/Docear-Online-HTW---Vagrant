@@ -6,9 +6,11 @@
 
 <VirtualHost *:443>
     ServerName <%= @domain %>
+    <% if @deploy_environment == "dev" %>
     RewriteEngine on
     RewriteCond %{HTTP_HOST} !^<%= @domain %>
     RewriteRule ^/(.*)$ https://<%= @domain %>/$1 [L,R=301]
+    <% end %>
 
     RequestHeader set X-Forwarded-Proto "https"
     SSLEngine On
