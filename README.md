@@ -9,7 +9,9 @@
 
 ## Steps to view app in Browser
 1. put freeplane zip (freeplane_bin-1.2.21.zip) into the folder artifacts/mindmap-backend
+    * https://ci.docear.org/ci/job/Docear-Desktop-freeplane/ws/freeplane_framework/dist/freeplane_server.zip
 1. put play zip (docear-frontend-0.1-SNAPSHOT.zip) into the folder artifacts/play-frontend
+    * https://ci.docear.org/ci/job/Frontend/ws/dist/docear-frontend-0.1-SNAPSHOT.zip 
 1. `vagrant up` creates the virtual maschine and starts it
     * this may take a while the first time because it downloads an prepared image for Debian Squeeze
 	* assure your firewall does not block the download
