@@ -106,7 +106,7 @@ $play_frontend_artifact_folder = "/home/import/$play_frontend_username"
 $play_frontend_home = "/var/$play_frontend_username"
 $play_application_path = "$play_frontend_home/current"
 $play_config_resource = $deploy_environment ? {
-    'dev' =>  "staging.conf",
+    'dev' =>  "showtime.conf",
     'staging' => "staging.conf",
     'prod' => "prod.conf"
 }

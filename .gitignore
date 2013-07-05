@@ -19,6 +19,6 @@ classes
 artifacts/*
 !artifacts/mindmap-backend/README.md
 !artifacts/play-frontend/README.md
-
+secrets.zip
 
 
