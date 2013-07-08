@@ -159,6 +159,7 @@ define add_redeploy_init_script($name, $artifact) {
       ensure => "running",
       enable  => "true",
       hasstatus => false,
+      require => Exec["activate /etc/init.d/$redeploy_name"]
   }
 }
 
