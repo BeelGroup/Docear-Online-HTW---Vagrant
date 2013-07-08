@@ -9,6 +9,7 @@
 
 ## Steps to view app in Browser
 1. put freeplane zip into the folder artifacts/mindmap-backend
+    * login in Jenkins https://ci.docear.org/ci
     * https://ci.docear.org/ci/job/Docear-Desktop-freeplane/ws/freeplane_framework/dist/freeplane_server.zip
 1. put play zip into the folder artifacts/play-frontend
     * https://ci.docear.org/ci/job/Frontend/ws/dist/docear-frontend-0.1-SNAPSHOT.zip 
