@@ -57,20 +57,20 @@ class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
 
   file { "ssl-server-crt ":
       path    => "/etc/ssl/certs/server.crt",
-      content => template("$stuff_folder/puppet/manifests/ssl/new.cert.cert.erb"),
+      content => template("$stuff_folder/manifests/ssl/new.cert.cert.erb"),
       require  => Package["apache2"],
       replace => false,
   }
   file { "ssl-server-key ":
       path    => "/etc/ssl/private/server.key",
-      content => template("$stuff_folder/puppet/manifests/ssl/new.cert.key.erb"),
+      content => template("$stuff_folder/manifests/ssl/new.cert.key.erb"),
       require  => Package["apache2"],
       replace => false,
   }
 
   file { "apache htpasswd":
       path => "$htpasswd_file_path",
-      content => file("$stuff_folder/puppet/manifests/htpasswd"),
+      content => file("$stuff_folder/manifests/htpasswd"),
       require => Package["apache2"],
   }
 
@@ -82,7 +82,7 @@ class apache($htpasswd_file_path = "/etc/apache2/.htpasswd") {
 
   file { "apache-conf":
       path    => "/etc/apache2/sites-available/default",
-      content => template("$stuff_folder/puppet/manifests/apache-virtual-host.erb"),
+      content => template("$stuff_folder/manifests/apache-virtual-host.erb"),
       require  => [Package["apache2"], Module["proxy"], Module["proxy_http"], Module["proxy_balancer"], Module["ssl"], Module["headers"], File["ssl-server-crt "], File["ssl-server-key "], File["apache htpasswd"]],
       notify => Exec["force-reload-apache2"],
   }
@@ -121,7 +121,7 @@ add_user { "$play_frontend_username":
 define add_init_script($name, $application_path, $start_command, $user, $group, $pid_file, $current_working_dir, $unzipped_foldername) {
 
   file {"/etc/init.d/$name":
-      content => template("$stuff_folder/puppet/manifests/init-with-pid.erb"),
+      content => template("$stuff_folder/manifests/init-with-pid.erb"),
       ensure => present,
       group => "root",
       owner => "root",
@@ -142,7 +142,7 @@ define add_redeploy_init_script($name, $artifact) {
   $redeploy_name="$name-redeploy"
 
   file {"/etc/init.d/$redeploy_name":
-      content => template("$stuff_folder/puppet/manifests/redeploy-daemon.erb"),
+      content => template("$stuff_folder/manifests/redeploy-daemon.erb"),
       ensure => present,
       group => "root",
       owner => "root",
