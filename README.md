@@ -66,6 +66,7 @@
     * don't forget to mark "Restore plugins"
     * restart Jenkins
 * https://localhost:5443/ci
+* use line  feeds, the carriage returns can break the puppet scripts
 
 # Puppet
 * http://docs.puppetlabs.com/references/2.7.latest/
