@@ -28,7 +28,7 @@ Vagrant::Config.run do |config|
 
    puppet.facter = [
       [ "deploy_environment", "dev" ],
-      [ "stuff_folder", "/vagrant" ],
+      [ "stuff_folder", "/tmp/vagrant-puppet" ],
    ]
 
   end
