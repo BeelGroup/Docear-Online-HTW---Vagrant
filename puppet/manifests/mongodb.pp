@@ -21,7 +21,7 @@ class mongodb {
   }
 
   file { "/etc/mongodb.conf":
-      content => template("$stuff_folder/puppet/manifests/mongodb-conf.erb"),
+      content => template("$stuff_folder/manifests/mongodb-conf.erb"),
       notify  => Service["mongodb"],
       require => [Package["mongodb-10gen"]],
   }
