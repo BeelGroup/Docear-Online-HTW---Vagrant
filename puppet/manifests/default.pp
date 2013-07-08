@@ -139,7 +139,7 @@ package {"inotify-tools":
 }
 
 define add_redeploy_init_script($name, $artifact) {
-  $redeploy_name= "$name-redeploy"
+  $redeploy_name="$name-redeploy"
 
   file {"/etc/init.d/$redeploy_name":
       content => template("$stuff_folder/puppet/manifests/redeploy-daemon.erb"),
@@ -147,11 +147,12 @@ define add_redeploy_init_script($name, $artifact) {
       group => "root",
       owner => "root",
       mode => 750,
+      require => Package["inotify-tools"],
   }
 
   exec {"activate /etc/init.d/$redeploy_name":
+      require => File["/etc/init.d/$redeploy_name"],
       command => "update-rc.d $redeploy_name defaults",
-      require => [File["/etc/init.d/$redeploy_name"], Package["inotify-tools"]],
       notify => Service["$redeploy_name"],
   }
 
