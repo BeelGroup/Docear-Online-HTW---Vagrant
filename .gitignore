@@ -1,8 +1,9 @@
+.*
 !.gitignore
 !.gitkeep
+!.gitattributes
 *.bak.ruby
 *.iml
-.*
 playapp/target
 playapp/project/target
 playapp/project/project/target
