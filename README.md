@@ -68,6 +68,7 @@
     * restart Jenkins
 * https://localhost:5443/ci
 * use line  feeds, the carriage returns can break the puppet scripts
+    * use dos2unix for *.pp files
 
 # Puppet
 * http://docs.puppetlabs.com/references/2.7.latest/
